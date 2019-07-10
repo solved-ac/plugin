@@ -1,0 +1,158 @@
+.label-difficulty {
+    width: 5ch;
+    margin-right: 2px;
+    text-align: left;
+    padding: none !important;
+}
+
+.difficulty_vote {
+    display: inline-block;
+    width: 30ch;
+}
+
+.level_badge.small {
+    line-height: inherit;
+    width: 1.4em;
+    height: 1.4em;
+    margin-right: 0.2em;
+    vertical-align: middle;
+}
+
+.poll_shown img,
+.poll_shown br {
+    display: inherit;
+}
+
+.poll_hidden span,
+.poll_hidden img,
+.poll_hidden br {
+    display: none;
+}
+
+.title_badge {
+    font-size: 2rem;
+}
+
+.level_hidden {
+    display: none;
+}
+
+.text-b1 {
+    color: #ad5600;
+}
+
+.text-b2 {
+    color: #ad5600;
+}
+
+.text-b3 {
+    color: #ad5600;
+}
+
+.text-b4 {
+    color: #ad5600;
+}
+
+.text-b5 {
+    color: #ad5600;
+}
+
+.text-s1 {
+    color: #435f7a;
+}
+
+.text-s2 {
+    color: #435f7a;
+}
+
+.text-s3 {
+    color: #435f7a;
+}
+
+.text-s4 {
+    color: #435f7a;
+}
+
+.text-s5 {
+    color: #435f7a;
+}
+
+.text-g1 {
+    color: #ec9a00;
+}
+
+.text-g2 {
+    color: #ec9a00;
+}
+
+.text-g3 {
+    color: #ec9a00;
+}
+
+.text-g4 {
+    color: #ec9a00;
+}
+
+.text-g5 {
+    color: #ec9a00;
+}
+
+.text-p1 {
+    color: #949494;
+}
+
+.text-p2 {
+    color: #949494;
+}
+
+.text-p3 {
+    color: #949494;
+}
+
+.text-p4 {
+    color: #949494;
+}
+
+.text-p5 {
+    color: #949494;
+}
+
+.text-d1 {
+    color: #00b4fc;
+}
+
+.text-d2 {
+    color: #00b4fc;
+}
+
+.text-d3 {
+    color: #00b4fc;
+}
+
+.text-d4 {
+    color: #00b4fc;
+}
+
+.text-d5 {
+    color: #00b4fc;
+}
+
+.text-r1 {
+    color: #ff0062;
+}
+
+.text-r2 {
+    color: #ff0062;
+}
+
+.text-r3 {
+    color: #ff0062;
+}
+
+.text-r4 {
+    color: #ff0062;
+}
+
+.text-r5 {
+    color: #ff0062;
+}
