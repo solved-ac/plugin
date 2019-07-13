@@ -4,12 +4,7 @@ function getData(url, callback) {
     request.onload = function () {
         if (request.status >= 200 && request.status < 400) {
             callback(request.responseText);
-        } else {
-            // TODO
         }
-    };
-    request.onerror = function () {
-        // TODO
     };
     request.send();
 }
@@ -21,12 +16,7 @@ function getJson(url, callback) {
         if (request.status >= 200 && request.status < 400) {
             var data = JSON.parse(request.responseText);
             callback(data);
-        } else {
-            // TODO
         }
-    };
-    request.onerror = function () {
-        // TODO
     };
     request.send();
 }
@@ -47,6 +37,45 @@ function getDom(url, callback) {
         // TODO
     };
     request.send();
+}
+
+function initializeVoting(token, problemId, votedFlag) {
+    var params = {
+        "token": token
+    };
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.solved.ac/validate_token.php', true);
+    xhr.setRequestHeader('Content-type', 'application/json');
+    xhr.onload = function () {
+        if (this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            if (response.success) {
+                var user = response.user;
+                if (user.level >= 16) {
+                    if (document.querySelector(".label-success")) {
+                        const bottom = document.querySelector(".col-md-12:nth-child(4)");
+                        const toggleFunction = "var o=document.getElementById('problem_difficulty');if(o.className==='poll_shown'){o.className='poll_hidden';}else{o.className='poll_shown';}";
+                        var visibleState = "poll_shown";
+                        if (votedFlag == true) visibleState = "poll_hidden";
+                        bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"" + toggleFunction + "\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>";
+        
+                        const difficultySection = document.getElementById("problem_difficulty");
+                        for (var i = 1; i <= 30; i++) {
+                            const func = "var params={'token':'"+token+"','id':"+problemId+",'level':"+i+"};" +
+                                "var o=new XMLHttpRequest;" + 
+                                "o.open('POST','https://api.solved.ac/vote_difficulty.php',!0)," +
+                                "o.onload=function(){o.status>=200&&o.status<400&&location.reload()}," +
+                                "o.send(JSON.stringify(params))";
+                            difficultySection.innerHTML += "<span onclick=\"" + func + "\">" + levelLabel(i) + "</a>";
+                            if (i % 5 == 0) difficultySection.innerHTML += "<br>";
+                        }
+                        difficultySection.innerHTML += "<br>";
+                    }
+                }
+            } 
+        }
+    };
+    xhr.send(JSON.stringify(params));
 }
 
 function formatPercentage(x) {
@@ -109,14 +138,16 @@ if (document.getElementById("problem-body") || document.getElementById("chart_di
             problemInfo.innerHTML = problemInfo.innerHTML + "<span class=\"title_badge\">" + levelLabel(level) + " " + levelText(level) + "</span>";
             if (level != 0) {
                 problemInfo.innerHTML = problemInfo.innerHTML + "<br><br><b>난이도 의견</b><br>";
-
                     for (var i = 0; i < difficultyVotes.length; i++) {
                         var vote = difficultyVotes[i];
                         if (vote.user_id === nick) votedFlag = true;
                         problemInfo.innerHTML = problemInfo.innerHTML + "<span class=\"difficulty_vote\"><span class=\"text-" + levelCssClass(vote.user_level) + "\">" + levelLabel(vote.user_level) + vote.user_id + "</span> ➔ " + levelLabel(vote.voted_level) + "</span>";
                     }
-                
             }
+
+            chrome.storage.local.get('token', function(items) {
+                initializeVoting(items.token, problemId, votedFlag);
+            });
         });
     });
 } else {

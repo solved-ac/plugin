@@ -1,0 +1,26 @@
+* {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.contents {
+    width: 360px;
+    padding: 32px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    line-height: normal;
+    padding: .8em .5em;
+}
+
+div.button {
+    display: inline-block;
+    padding: 16px;
+    font-weight: bold;
+    background: #17ce3a;
+    color: #fff;
+}

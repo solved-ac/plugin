@@ -1,3 +1,7 @@
+#problem_difficulty span {
+    font-size: 3rem;
+}
+
 .label-difficulty {
     width: 5ch;
     margin-right: 2px;

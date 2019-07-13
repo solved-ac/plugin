@@ -1,6 +1,6 @@
 {
     "name": "solved.ac",
-    "version": "1.0",
+    "version": "1.1",
     "description": "Baekjoon Online Judge Enhancements",
     "manifest_version": 2,
     "author": "shiftpsh",
@@ -12,7 +12,9 @@
     },
     "permissions": [
         "*://*.acmicpc.net/*",
-        "tabs"
+        "*://*.solved.ac/*",
+        "tabs",
+        "storage"
     ],
     "web_accessible_resources": [
         "svg/*.svg",
@@ -30,5 +32,8 @@
                 "inject_stylesheet.js"
             ]
         }
-    ]
+    ],
+    "browser_action": {
+        "default_popup": "options_login.html"
+    }
 }
