@@ -135,14 +135,29 @@ if (document.getElementById("problem-body") || document.getElementById("chart_di
             var votedFlag = false;
 
             const problemInfo = document.querySelector("div.page-header");
-            problemInfo.innerHTML = problemInfo.innerHTML + "<span class=\"title_badge\">" + levelLabel(level) + " " + levelText(level) + "</span>";
+
+            var titleBadge = document.createElement("span");
+            titleBadge.className = "title_badge";
+            titleBadge.innerHTML = levelLabel(level) + " " + levelText(level);
+            problemInfo.appendChild(titleBadge);
+
             if (level != 0) {
-                problemInfo.innerHTML = problemInfo.innerHTML + "<br><br><b>난이도 의견</b><br>";
-                    for (var i = 0; i < difficultyVotes.length; i++) {
-                        var vote = difficultyVotes[i];
-                        if (vote.user_id === nick) votedFlag = true;
-                        problemInfo.innerHTML = problemInfo.innerHTML + "<span class=\"difficulty_vote\"><span class=\"text-" + levelCssClass(vote.user_level) + "\">" + levelLabel(vote.user_level) + vote.user_id + "</span> ➔ " + levelLabel(vote.voted_level) + "</span>";
-                    }
+                problemInfo.appendChild(document.createElement("br"));
+                problemInfo.appendChild(document.createElement("br"));
+                var difficultyVotesHeader = document.createElement("b");
+                difficultyVotesHeader.innerText = "난이도 의견";
+                problemInfo.appendChild(difficultyVotesHeader);
+                problemInfo.appendChild(document.createElement("br"));
+
+                for (var i = 0; i < difficultyVotes.length; i++) {
+                    var vote = difficultyVotes[i];
+                    if (vote.user_id === nick) votedFlag = true;
+
+                    var difficultyVote = document.createElement("span");
+                    difficultyVote.className = "difficulty_vote";
+                    difficultyVote.innerHTML = "<span class=\"text-" + levelCssClass(vote.user_level) + "\">" + levelLabel(vote.user_level) + vote.user_id + "</span> ➔ " + levelLabel(vote.voted_level);
+                    problemInfo.appendChild(difficultyVote);
+                }
             }
 
             chrome.storage.local.get('token', function(items) {

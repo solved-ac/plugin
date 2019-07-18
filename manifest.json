@@ -1,7 +1,7 @@
 {
     "name": "solved.ac",
-    "version": "1.1",
-    "description": "Baekjoon Online Judge Enhancements",
+    "version": "1.1.1",
+    "description": "Problem difficulty informations for BOJ",
     "manifest_version": 2,
     "author": "shiftpsh",
     "icons": {
@@ -17,7 +17,6 @@
         "storage"
     ],
     "web_accessible_resources": [
-        "svg/*.svg",
         "css/*.css"
     ],
     "content_scripts": [{
