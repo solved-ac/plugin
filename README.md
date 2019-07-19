@@ -1,4 +1,4 @@
-<img src="https://solved.ac/res/logo-blacktext.svg" alt="solved.ac" width="240">
+<a href="https://solved.ac"><img src="https://solved.ac/res/logo-blacktext.svg" alt="solved.ac" width="240"></a>
 
 [백준 온라인 저지](https://www.acmicpc.net/) 문제들에 난이도 붙여 주는 서비스 - Chrome 플러그인
 
