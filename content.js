@@ -129,11 +129,11 @@ function kudekiLevelText(level) {
 function levelLabel(level) {
     if (level == -1) level = 0;
     return "<span class=\"level_hidden\">" + ('0' + level).slice(-2)
-    + "</span><img class=\"level_badge small\" src=\"" + chrome.extension.getURL("svg/" + level + ".svg") + "\">";
+    + "</span><img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/" + level + ".svg") + "\">";
 }
 
 function kudekiLevelLabel(level) {
-    return "<img class=\"level_badge small\" src=\"" + chrome.extension.getURL("svg/ka" + level + ".svg") + "\">";
+    return "<img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/ka" + level + ".svg") + "\">";
 }
 
 if (document.getElementById("problem-body") || document.getElementById("chart_div")) {
