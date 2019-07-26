@@ -121,15 +121,24 @@ function levelText(level) {
     return "<span class=\"text-" + levelCssClass(level) + "\">" + levelName(level) + "</span>";
 }
 
+function kudekiLevelText(level) {
+    const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
+    return "<span class=\"text-kudeki\">Kudeki " + roman[level - 1] + "</span>";
+}
+
 function levelLabel(level) {
     if (level == -1) level = 0;
     return "<span class=\"level_hidden\">" + ('0' + level).slice(-2)
     + "</span><img class=\"level_badge small\" src=\"//solved.ac/res/tier-small/" + level + ".svg\">";
 }
 
+function kudekiLevelLabel(level) {
+    return "<img class=\"level_badge small\" src=\"//solved.ac/res/tier-small/k" + level + ".svg\">";
+}
+
 if (document.getElementById("problem-body") || document.getElementById("chart_div")) {
     const problemId = document.querySelector("ul.problem-menu li a").innerText.replace(/[^0-9.]/g, "");
-    getData("https://api.solved.ac/question_level.php?id=" + problemId, function(level) {
+    getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
         getJson("https://api.solved.ac/question_level_votes.php?id=" + problemId, function(difficultyVotes) {
             const nick = document.querySelector("ul.loginbar li:first-child a").innerText.trim();
             var votedFlag = false;
@@ -138,10 +147,17 @@ if (document.getElementById("problem-body") || document.getElementById("chart_di
 
             var titleBadge = document.createElement("span");
             titleBadge.className = "title_badge";
-            titleBadge.innerHTML = levelLabel(level) + " " + levelText(level);
+            titleBadge.innerHTML = levelLabel(levelData.level) + " " + levelText(levelData.level);
             problemInfo.appendChild(titleBadge);
 
-            if (level != 0) {
+            if (levelData.kudeki_level) {
+                var titleBadge = document.createElement("span");
+                titleBadge.className = "title_badge";
+                titleBadge.innerHTML = " / " + kudekiLevelLabel(levelData.kudeki_level) + " " + kudekiLevelText(levelData.level);
+                problemInfo.appendChild(titleBadge);
+            }
+
+            if (levelData.level != 0) {
                 problemInfo.appendChild(document.createElement("br"));
                 problemInfo.appendChild(document.createElement("br"));
                 var difficultyVotesHeader = document.createElement("b");
@@ -176,9 +192,11 @@ if (document.getElementById("problem-body") || document.getElementById("chart_di
         .forEach(function (item, index) {
             const problemId = item.getAttribute("href").split("/")[2];
     
-            getData("https://api.solved.ac/question_level.php?id=" + problemId, function(level) {
-                const originalHTML = item.outerHTML;
-                item.outerHTML = levelLabel(level) + ' ' + originalHTML;
+            getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
+                if (levelData.kudeki_level) {
+                    item.insertAdjacentHTML('afterbegin', kudekiLevelLabel(levelData.kudeki_level));
+                }
+                item.insertAdjacentHTML('afterbegin', levelLabel(levelData.level) + " ");
             });
         })
 }
