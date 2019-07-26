@@ -17,7 +17,8 @@
         "storage"
     ],
     "web_accessible_resources": [
-        "css/*.css"
+        "css/*.css",
+        "svg/*.svg"
     ],
     "content_scripts": [{
             "matches": [

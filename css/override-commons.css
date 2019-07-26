@@ -16,10 +16,14 @@
 
 .level_badge.small {
     line-height: inherit;
-    width: 1.4em;
+    width: 1.1em;
     height: 1.4em;
-    margin-right: 0.2em;
+    margin-right: 0.4em;
     vertical-align: middle;
+}
+
+.level_badge.small:last-child {
+    margin-right: 1ch;
 }
 
 .poll_shown img,
@@ -45,122 +49,26 @@
     color: #9c62d3;
 }
 
-.text-b1 {
+.text-bronze {
     color: #ad5600;
 }
 
-.text-b2 {
-    color: #ad5600;
-}
-
-.text-b3 {
-    color: #ad5600;
-}
-
-.text-b4 {
-    color: #ad5600;
-}
-
-.text-b5 {
-    color: #ad5600;
-}
-
-.text-s1 {
+.text-silver {
     color: #435f7a;
 }
 
-.text-s2 {
-    color: #435f7a;
-}
-
-.text-s3 {
-    color: #435f7a;
-}
-
-.text-s4 {
-    color: #435f7a;
-}
-
-.text-s5 {
-    color: #435f7a;
-}
-
-.text-g1 {
+.text-gold {
     color: #ec9a00;
 }
 
-.text-g2 {
-    color: #ec9a00;
-}
-
-.text-g3 {
-    color: #ec9a00;
-}
-
-.text-g4 {
-    color: #ec9a00;
-}
-
-.text-g5 {
-    color: #ec9a00;
-}
-
-.text-p1 {
+.text-platinum {
     color: #949494;
 }
 
-.text-p2 {
-    color: #949494;
-}
-
-.text-p3 {
-    color: #949494;
-}
-
-.text-p4 {
-    color: #949494;
-}
-
-.text-p5 {
-    color: #949494;
-}
-
-.text-d1 {
+.text-diamond {
     color: #00b4fc;
 }
 
-.text-d2 {
-    color: #00b4fc;
-}
-
-.text-d3 {
-    color: #00b4fc;
-}
-
-.text-d4 {
-    color: #00b4fc;
-}
-
-.text-d5 {
-    color: #00b4fc;
-}
-
-.text-r1 {
-    color: #ff0062;
-}
-
-.text-r2 {
-    color: #ff0062;
-}
-
-.text-r3 {
-    color: #ff0062;
-}
-
-.text-r4 {
-    color: #ff0062;
-}
-
-.text-r5 {
+.text-ruby {
     color: #ff0062;
 }

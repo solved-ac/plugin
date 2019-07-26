@@ -111,9 +111,9 @@ function levelShortDisplayName(level) {
 }
 
 function levelCssClass(level) {
-    const prefix = ['b', 's', 'g', 'p', 'd', 'r'];
+    const prefix = ['bronze', 'silver', 'gold', 'platinum', 'diamond', 'ruby'];
 
-    return prefix[Math.floor((level - 1) / 5)] + (5 - (level - 1) % 5);
+    return prefix[Math.floor((level - 1) / 5)];
 }
 
 function levelText(level) {
@@ -129,11 +129,11 @@ function kudekiLevelText(level) {
 function levelLabel(level) {
     if (level == -1) level = 0;
     return "<span class=\"level_hidden\">" + ('0' + level).slice(-2)
-    + "</span><img class=\"level_badge small\" src=\"//solved.ac/res/tier-small/" + level + ".svg\">";
+    + "</span><img class=\"level_badge small\" src=\"" + chrome.extension.getURL("svg/" + level + ".svg") + "\">";
 }
 
 function kudekiLevelLabel(level) {
-    return "<img class=\"level_badge small\" src=\"//solved.ac/res/tier-small/k" + level + ".svg\">";
+    return "<img class=\"level_badge small\" src=\"" + chrome.extension.getURL("svg/ka" + level + ".svg") + "\">";
 }
 
 if (document.getElementById("problem-body") || document.getElementById("chart_div")) {
@@ -196,7 +196,7 @@ if (document.getElementById("problem-body") || document.getElementById("chart_di
                 if (levelData.kudeki_level) {
                     item.insertAdjacentHTML('afterbegin', kudekiLevelLabel(levelData.kudeki_level));
                 }
-                item.insertAdjacentHTML('afterbegin', levelLabel(levelData.level) + " ");
+                item.insertAdjacentHTML('afterbegin', levelLabel(levelData.level));
             });
         })
 }
