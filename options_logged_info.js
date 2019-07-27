@@ -1,41 +1,39 @@
-var loggedInUser = document.getElementById('user_id');
-var logoutButton = document.getElementById('submit');
+const loggedInUser = document.getElementById('user_id')
+const logoutButton = document.getElementById('submit')
 
-function logout() {
-    chrome.storage.local.remove("token", function() {
-        chrome.tabs.getSelected(null, function(tab) {
-            var code = 'window.location.reload();';
-            chrome.tabs.executeScript(tab.id, {code: code});
-        });
-        window.location.href = '/options_login.html';
-    });
+const logout = () => {
+	chrome.storage.local.remove('token', () => {
+		chrome.tabs.getSelected(null, ({ id }) => {
+			const code = 'window.location.reload();'
+			chrome.tabs.executeScript(id, { code })
+		})
+		window.location.href = '/options_login.html'
+	})
 }
 
-function validateToken(token) {
-    var params = {
-        "token": token
-    };
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://api.solved.ac/validate_token.php', true);
-    xhr.setRequestHeader('Content-type', 'application/json');
-    xhr.onload = function () {
-        console.log(this.responseText);
-        if (this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            loggedInUser.innerText = response.user.user_id;
-        } else {
-            alert(JSON.parse(this.responseText).error);
-            logout();
-        }
-    };
-    xhr.send(JSON.stringify(params));
+const validateToken = token => {
+	const params = { token }
+	const xhr = new XMLHttpRequest()
+	xhr.open('POST', 'https://api.solved.ac/validate_token.php', true)
+	xhr.setRequestHeader('Content-type', 'application/json')
+	xhr.onload = ({ responseText }) => {
+		console.log(responseText)
+		if (!this.status === 200) {
+			alert(JSON.parse(responseText).error)
+			logout()
+			return
+		}
+		const { user } = JSON.parse(responseText)
+		loggedInUser.innerText = user.user_id
+	}
+	xhr.send(JSON.stringify(params))
 }
 
-chrome.storage.local.get(["token"], function(items){
-    debugger;
-    if (items.token) {
-        validateToken(items.token);
-    }
-});
+chrome.storage.local.get(['token'], ({ token }) => {
+	debugger
+	if (token) {
+		validateToken(token)
+	}
+})
 
-logoutButton.addEventListener("click", logout);
+logoutButton.addEventListener('click', logout)

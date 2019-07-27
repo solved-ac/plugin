@@ -1,48 +1,43 @@
-chrome.storage.local.get(["token"], function(items){
-    debugger;
-    if (items.token) {
-        window.location.href = '/options_logged_info.html';
-    }
-});
+chrome.storage.local.get(['token'], ({ token }) => {
+	debugger
+	if (token) window.location.href = '/options_logged_info.html'
+})
 
-var submitButton = document.getElementById('submit');
+const submitButton = document.getElementById('submit')
+const userIdInput = document.getElementById('user_id')
+const passwordInput = document.getElementById('password')
 
-var userIdInput = document.getElementById('user_id');
-var passwordInput = document.getElementById('password');
+const validate = () => {
+	const { value: userId } = userIdInput
+	const { value: password } = passwordInput
+	const params = {
+		user_id: userId,
+		password: password,
+	}
+	const xhr = new XMLHttpRequest()
+	xhr.open('POST', 'https://api.solved.ac/request_token.php', true)
+	xhr.setRequestHeader('Content-type', 'application/json')
+	xhr.onload = ({ responseText, status }) => {
+		console.log(responseText)
+		if (!status === 200) {
+			alert(JSON.parse(this.responseText).error)
+			return
+		}
 
-function onKeyPress() {
-    if (event.keyCode == 13) {
-        validate();
-    }
+		chrome.storage.local.set({ token: JSON.parse(responseText).token }, () => {
+			chrome.tabs.getSelected(null, tab => {
+				const code = 'window.location.reload();'
+				chrome.tabs.executeScript(tab.id, { code })
+			})
+			window.location.href = '/options_logged_info.html'
+		})
+		return
+	}
+	xhr.send(JSON.stringify(params))
 }
 
-function validate() {
-    var userId = userIdInput.value;
-    var password = passwordInput.value;
-    var params = {
-        "user_id": userId,
-        "password": password
-    };
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://api.solved.ac/request_token.php', true);
-    xhr.setRequestHeader('Content-type', 'application/json');
-    xhr.onload = function () {
-        console.log(this.responseText);
-        if (this.status == 200) {
-            chrome.storage.local.set({ "token" : JSON.parse(this.responseText).token }, function() {
-                chrome.tabs.getSelected(null, function(tab) {
-                    var code = 'window.location.reload();';
-                    chrome.tabs.executeScript(tab.id, {code: code});
-                });
-                window.location.href = '/options_logged_info.html';
-            });
-        } else {
-            alert(JSON.parse(this.responseText).error);
-        }
-    };
-    xhr.send(JSON.stringify(params));
-}
+const onKeyPress = ({ keyCode }) => (keyCode === 13 ? validate() : null)
 
-submitButton.addEventListener("click", validate);
-userIdInput.addEventListener("keyup", onKeyPress);
-passwordInput.addEventListener("keyup", onKeyPress);
+submitButton.addEventListener('click', validate)
+userIdInput.addEventListener('keyup', onKeyPress)
+passwordInput.addEventListener('keyup', onKeyPress)
