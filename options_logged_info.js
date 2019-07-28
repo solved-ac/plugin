@@ -1,5 +1,6 @@
 const loggedInUser = document.getElementById('user_id')
 const logoutButton = document.getElementById('submit')
+const URL = 'https://api.solved.ac/validate_token.php'
 
 const logout = () => {
 	chrome.storage.local.remove('token', () => {
@@ -11,29 +12,13 @@ const logout = () => {
 	})
 }
 
-const validateToken = token => {
-	const params = { token }
-	const xhr = new XMLHttpRequest()
-	xhr.open('POST', 'https://api.solved.ac/validate_token.php', true)
-	xhr.setRequestHeader('Content-type', 'application/json')
-	xhr.onload = ({ responseText }) => {
-		console.log(responseText)
-		if (!this.status === 200) {
-			alert(JSON.parse(responseText).error)
-			logout()
-			return
-		}
-		const { user } = JSON.parse(responseText)
-		loggedInUser.innerText = user.user_id
-	}
-	xhr.send(JSON.stringify(params))
+const validateToken = ({ token }) => {
+	debugger
+	axios.post(URL, { token }).then(({ data, status }) => {
+		loggedInUser.innerText = data.user.user_id
+	})
 }
 
-chrome.storage.local.get(['token'], ({ token }) => {
-	debugger
-	if (token) {
-		validateToken(token)
-	}
-})
+chrome.storage.local.get(['token'], validateToken)
 
 logoutButton.addEventListener('click', logout)

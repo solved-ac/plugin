@@ -27,7 +27,7 @@
             "all_frames": true,
             "js": [
                 "3rdparty/jquery.3.3.1.min.js",
-                "3rdparty/bootstrap.3.2.0.min.js",
+				"3rdparty/bootstrap.3.2.0.min.js",
                 "content.js",
                 "inject_stylesheet.js"
             ]
