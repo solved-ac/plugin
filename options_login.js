@@ -8,12 +8,9 @@ const userIdInput = document.getElementById('user_id')
 const passwordInput = document.getElementById('password')
 
 const validate = () => {
-	const { value: userId } = userIdInput
+	const { value: user_id } = userIdInput
 	const { value: password } = passwordInput
-	const params = {
-		user_id: userId,
-		password: password,
-	}
+	const params = { user_id, password }
 	const xhr = new XMLHttpRequest()
 	xhr.open('POST', 'https://api.solved.ac/request_token.php', true)
 	xhr.setRequestHeader('Content-type', 'application/json')
