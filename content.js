@@ -153,7 +153,7 @@ if (document.getElementById("problem-body") || document.getElementById("chart_di
             if (levelData.kudeki_level) {
                 var titleBadge = document.createElement("span");
                 titleBadge.className = "title_badge";
-                titleBadge.innerHTML = " / " + kudekiLevelLabel(levelData.kudeki_level) + " " + kudekiLevelText(levelData.level);
+                titleBadge.innerHTML = " / " + kudekiLevelLabel(levelData.kudeki_level) + " " + kudekiLevelText(levelData.kudeki_level);
                 problemInfo.appendChild(titleBadge);
             }
 
