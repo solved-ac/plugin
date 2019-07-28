@@ -1,6 +1,3 @@
-const url = window.location.href
-if (url.includes('acmicpc.net')) inject('override-commons.css')
-
 const inject = localCss => {
 	const href = chrome.extension.getURL(`css/${localCss}`)
 	console.log(href)
@@ -8,7 +5,10 @@ const inject = localCss => {
 	Object.assign(injection, {
 		rel: 'stylesheet',
 		type: 'text/css',
-		href
+		href,
 	})
 	document.getElementsByTagName('head')[0].appendChild(injection)
 }
+
+const url = window.location.href
+if (url.includes('acmicpc.net')) inject('override-commons.css')
