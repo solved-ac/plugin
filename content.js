@@ -139,6 +139,7 @@ function kudekiLevelLabel(level) {
 if (document.getElementById("problem-body") || document.getElementById("chart_div")) {
     const problemId = document.querySelector("ul.problem-menu li a").innerText.replace(/[^0-9.]/g, "");
     getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
+        if (levelData.level == null) return;
         getJson("https://api.solved.ac/question_level_votes.php?id=" + problemId, function(difficultyVotes) {
             const nick = document.querySelector("ul.loginbar li:first-child a").innerText.trim();
             var votedFlag = false;
