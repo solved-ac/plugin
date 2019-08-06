@@ -2,6 +2,8 @@
 
 [백준 온라인 저지](https://www.acmicpc.net/) 문제들에 난이도 붙여 주는 서비스 - Chrome 플러그인
 
+[Chrome 웹 스토어](https://chrome.google.com/webstore/detail/solvedac/anenheoccfogllpbpcmbbpcbjpogeehe)에서 다운로드하기
+
 ## 목차
 
 - [기능](#기능)
