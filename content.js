@@ -64,7 +64,7 @@ function initializeVoting(token, problemId, votedFlag) {
                             const func = "var params={'token':'"+token+"','id':"+problemId+",'level':"+i+"};" +
                                 "var o=new XMLHttpRequest;" + 
                                 "o.open('POST','https://api.solved.ac/vote_difficulty.php',!0)," +
-                                "o.onload=function(){(o.status>=200&&o.status<400&&location.reload())||(alert(JSON.parse(o.responseText).error))}," +
+                                "o.onload=function(){if(o.status>=200&&o.status<400){location.reload()}else{alert(JSON.parse(o.responseText).error)}}," +
                                 "o.send(JSON.stringify(params))";
                             difficultySection.innerHTML += "<span onclick=\"" + func + "\">" + levelLabel(i) + "</a>";
                             if (i % 5 == 0) difficultySection.innerHTML += "<br>";
