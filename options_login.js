@@ -17,7 +17,10 @@ const validate = () => {
 			const { token } = data
 			console.log(token)
 			chrome.storage.local.set({ token }, () => {
-				chrome.tabs.getSelected(null, ({ id }) => {
+				chrome.tabs.query({
+					active: true,
+					currentWindow: true
+				}, ({ id }) => {
 					const code = 'window.location.reload();'
 					chrome.tabs.executeScript(id, { code })
 				})

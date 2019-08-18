@@ -4,7 +4,10 @@ const URL = 'https://api.solved.ac/validate_token.php'
 
 const logout = () => {
 	chrome.storage.local.remove('token', () => {
-		chrome.tabs.getSelected(null, ({ id }) => {
+		chrome.tabs.query({
+			active: true,
+			currentWindow: true
+		}, ({ id }) => {
 			const code = 'window.location.reload();'
 			chrome.tabs.executeScript(id, { code })
 		})
