@@ -4,6 +4,23 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+    font-family: 'Inter', 'Noto Sans KR', 'Noto Sans JP', 'NanumSquare', '나눔스퀘어', 'NanumGothic', '나눔고딕', 'Malgun Gothic', '맑은 고딕', sans-serif;
+    font-weight: 400;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+textarea, input {
+    font-family: 'Inter', 'Noto Sans KR', 'Noto Sans JP', 'NanumSquare', '나눔스퀘어', 'NanumGothic', '나눔고딕', 'Malgun Gothic', '맑은 고딕', sans-serif;
+    font-size: 1rem;
+}
+
 .contents {
     width: 360px;
     padding: 32px;
