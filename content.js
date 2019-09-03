@@ -180,7 +180,9 @@ if (isProblemPage()) {
                 problemInfo.appendChild(titleBadge)
             }
 
-            if (levelData.level != 0) {
+            var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
+
+            if (levelData.level != 0 && !standard) {
                 problemInfo.appendChild(document.createElement("br"))
                 problemInfo.appendChild(document.createElement("br"))
                 var difficultyVotesHeader = document.createElement("b")
@@ -191,7 +193,6 @@ if (isProblemPage()) {
                 for (var i = 0; i < difficultyVotes.length; i++) {
                     var vote = difficultyVotes[i]
                     if (vote.user_id === nick) votedFlag = true
-
                     var difficultyVote = document.createElement("span")
                     difficultyVote.className = "difficulty_vote"
                     difficultyVote.innerHTML = "<span class=\"text-" + levelCssClass(vote.user_level) + "\">" + levelLabel(vote.user_level) + vote.user_id + "</span> ➔ " + levelLabel(vote.voted_level)
@@ -199,9 +200,16 @@ if (isProblemPage()) {
                 }
             }
 
-            chrome.storage.local.get('token', function(items) {
-                initializeVoting(items.token, problemId, votedFlag)
-            })
+            if (standard) {
+                var standardIndicator = document.createElement("span")
+                standardIndicator.className = "standard label"
+                standardIndicator.innerText = "solved.ac 표준"
+                problemInfo.appendChild(standardIndicator)
+            } else {
+                chrome.storage.local.get('token', function(items) {
+                    initializeVoting(items.token, problemId, votedFlag)
+                })
+            }
         })
     })
 }
