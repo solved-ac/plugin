@@ -47,33 +47,32 @@ function initializeVoting(token, problemId, votedFlag) {
     xhr.open('POST', 'https://api.solved.ac/validate_token.php', true)
     xhr.setRequestHeader('Content-type', 'application/json')
     xhr.onload = function () {
-        if (this.status == 200) {
-            var response = JSON.parse(this.responseText)
-            if (response.success) {
-                var user = response.user
-                if (user.level >= 16) {
-                    if (document.querySelector(".label-success")) {
-                        const bottom = document.querySelector(".col-md-12:nth-child(4)")
-                        const toggleFunction = "var o=document.getElementById('problem_difficulty');if(o.className==='poll_shown'){o.className='poll_hidden';}else{o.className='poll_shown';}"
-                        var visibleState = "poll_shown"
-                        if (votedFlag == true) visibleState = "poll_hidden"
-                        bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"" + toggleFunction + "\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>"
-        
-                        const difficultySection = document.getElementById("problem_difficulty")
-                        for (var i = 1; i <= 30; i++) {
-                            const func = "var params={'token':'"+token+"','id':"+problemId+",'level':"+i+"};" +
-                                "var o=new XMLHttpRequest;" + 
-                                "o.open('POST','https://api.solved.ac/vote_difficulty.php',!0)," +
-                                "o.onload=function(){if(o.status>=200&&o.status<400){location.reload()}else{alert(JSON.parse(o.responseText).error)}}," +
-                                "o.send(JSON.stringify(params))"
-                            difficultySection.innerHTML += "<span onclick=\"" + func + "\">" + levelLabel(i) + "</a>"
-                            if (i % 5 == 0) difficultySection.innerHTML += "<br>"
-                        }
-                        difficultySection.innerHTML += "<br>"
-                    }
-                }
-            } 
+        if (this.status != 200) return
+
+        var response = JSON.parse(this.responseText)
+        if (!response.success) return
+
+        var user = response.user
+        if (user.level < 16) return
+        if (!document.querySelector(".label-success")) return
+
+        const bottom = document.querySelector(".col-md-12:nth-child(4)")
+        const toggleFunction = "var o=document.getElementById('problem_difficulty');if(o.className==='poll_shown'){o.className='poll_hidden';}else{o.className='poll_shown';}"
+        var visibleState = "poll_shown"
+        if (votedFlag == true) visibleState = "poll_hidden"
+        bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"" + toggleFunction + "\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>"
+    
+        const difficultySection = document.getElementById("problem_difficulty")
+        for (var i = 1; i <= 30; i++) {
+            const func = "var params={'token':'"+token+"','id':"+problemId+",'level':"+i+"};" +
+                "var o=new XMLHttpRequest;" + 
+                "o.open('POST','https://api.solved.ac/vote_difficulty.php',!0)," +
+                "o.onload=function(){if(o.status>=200&&o.status<400){location.reload()}else{alert(JSON.parse(o.responseText).error)}}," +
+                "o.send(JSON.stringify(params))"
+            difficultySection.innerHTML += "<span onclick=\"" + func + "\">" + levelLabel(i) + "</a>"
+            if (i % 5 == 0) difficultySection.innerHTML += "<br>"
         }
+        difficultySection.innerHTML += "<br>"
     }
     xhr.send(JSON.stringify(params))
 }
@@ -142,7 +141,19 @@ function kudekiLevelLabel(level) {
     return "<img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/ka" + level + ".svg") + "\">"
 }
 
-if (document.getElementById("problem-body") || document.getElementById("chart_div")) {
+function isProblemPage() {
+    const url = window.location.toString()
+    const pattern = /^https?:\/\/www\.acmicpc\.net\/problem\/[0-9]+\/?$/i
+    return pattern.test(url)
+}
+
+function isNotUserOrVsPage() {
+    const url = window.location.toString()
+    const pattern = /^https?:\/\/www\.acmicpc\.net\/(user|vs)\/.*$/i
+    return !pattern.test(url)
+}
+
+if (isProblemPage()) {
     const problemId = document.querySelector("ul.problem-menu li a").innerText.replace(/[^0-9.]/g, "")
     const problemInfo = document.querySelector("div.page-header")
 
@@ -193,7 +204,9 @@ if (document.getElementById("problem-body") || document.getElementById("chart_di
             })
         })
     })
-} else {
+}
+
+if (isNotUserOrVsPage()) {
     var pattern = /^[/]problem[/][0-9]+$/i
     var problemLinks = document.getElementsByTagName("a")
     problemLinks = [].slice.call(problemLinks, 0)
