@@ -141,22 +141,20 @@ function kudekiLevelLabel(level) {
     return "<img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/ka" + level + ".svg") + "\">"
 }
 
+function matchCurrentURL(regex) {
+    return regex.test(window.location.toString())
+}
+
 function isProblemPage() {
-    const url = window.location.toString()
-    const pattern = /^https?:\/\/www\.acmicpc\.net\/problem\/[0-9]+\/?$/i
-    return pattern.test(url)
+    return matchCurrentURL(/^https?:\/\/www\.acmicpc\.net\/problem\/[0-9]+\/?$/i)
 }
 
 function isUserPage() {
-    const url = window.location.toString()
-    const pattern = /^https?:\/\/www\.acmicpc\.net\/(user)\/[A-Za-z0-9_]+$/i
-    return pattern.test(url)
+    return matchCurrentURL(/^https?:\/\/www\.acmicpc\.net\/(user)\/[A-Za-z0-9_]+$/i)
 }
 
 function isNotUserOrVsPage() {
-    const url = window.location.toString()
-    const pattern = /^https?:\/\/www\.acmicpc\.net\/(user|vs)\/.*$/i
-    return !pattern.test(url)
+    return !matchCurrentURL(/^https?:\/\/www\.acmicpc\.net\/(user|vs)\/.*$/i)
 }
 
 if (isProblemPage()) {
@@ -245,7 +243,6 @@ if (isNotUserOrVsPage()) {
 }
 
 if (isUserPage()) {
-    // TODO add solved.ac tier
     var userId = document.querySelector(".page-header h1").innerText.trim()
     var userStaticsTable = document.querySelector("#statics tbody")
     getJson("https://api.solved.ac/user_information.php?id=" + userId, function (userData) {
