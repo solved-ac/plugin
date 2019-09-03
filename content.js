@@ -147,6 +147,12 @@ function isProblemPage() {
     return pattern.test(url)
 }
 
+function isUserPage() {
+    const url = window.location.toString()
+    const pattern = /^https?:\/\/www\.acmicpc\.net\/(user)\/[A-Za-z0-9_]+$/i
+    return pattern.test(url)
+}
+
 function isNotUserOrVsPage() {
     const url = window.location.toString()
     const pattern = /^https?:\/\/www\.acmicpc\.net\/(user|vs)\/.*$/i
@@ -236,6 +242,27 @@ if (isNotUserOrVsPage()) {
                 item.insertAdjacentHTML('afterbegin', levelLabel(levelData.level))
             })
         })
+}
+
+if (isUserPage()) {
+    // TODO add solved.ac tier
+    var userId = document.querySelector(".page-header h1").innerText.trim()
+    var userStaticsTable = document.querySelector("#statics tbody")
+    getJson("https://api.solved.ac/user_information.php?id=" + userId, function (userData) {
+        if (!userData) return
+        var newRow = document.createElement("tr")
+        var newRowHeader = document.createElement("th")
+        newRowHeader.innerText = "solved.ac"
+        var newRowDescription = document.createElement("td")
+        newRowDescription.innerHTML = "<a href=\"https://solved.ac/" + userData.user_id + "\">"
+                                        + "<span class=\"text-" + levelCssClass(userData.level) + "\">"
+                                            + levelLabel(userData.level) + "<b>" + userData.user_id + "</b>"
+                                        + "</span>"
+                                        + "</a>"
+        newRow.appendChild(newRowHeader)
+        newRow.appendChild(newRowDescription)
+        userStaticsTable.appendChild(newRow)
+    })
 }
 
 $('.dropdown-toggle').dropdown()
