@@ -195,7 +195,11 @@ if (isProblemPage()) {
                     if (vote.user_id === nick) votedFlag = true
                     var difficultyVote = document.createElement("span")
                     difficultyVote.className = "difficulty_vote"
-                    difficultyVote.innerHTML = "<span class=\"text-" + levelCssClass(vote.user_level) + "\">" + levelLabel(vote.user_level) + vote.user_id + "</span> ➔ " + levelLabel(vote.voted_level)
+                    difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
+                                                    + "<span class=\"text-" + levelCssClass(vote.user_level) + "\">"
+                                                        + levelLabel(vote.user_level) + vote.user_id
+                                                    + "</span>"
+                                                + "</a> ➔ " + levelLabel(vote.voted_level)
                     problemInfo.appendChild(difficultyVote)
                 }
             }
