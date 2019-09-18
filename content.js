@@ -132,7 +132,7 @@ function levelText(level) {
 
 function kudekiLevelText(level) {
     const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-    return "<span class=\"text-kudeki\">Kudeki " + roman[level - 1] + "</span>"
+    return "<span class=\"text-kudeki\">Ghudegy " + roman[level - 1] + "</span>"
 }
 
 function levelLabelUnlisted() {
