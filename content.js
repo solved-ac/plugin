@@ -209,9 +209,14 @@ if (isProblemPage()) {
             }
 
             if (standard) {
-                var standardIndicator = document.createElement("span")
-                standardIndicator.className = "standard label"
-                standardIndicator.innerText = "solved.ac 표준"
+                var standardIndicator = document.createElement("img")
+                standardIndicator.src = chrome.extension.getURL("svg/mark-verified.svg")
+                standardIndicator.style.width = "16px"
+                standardIndicator.style.height = "16px"
+                standardIndicator.style.marginLeft = "8px"
+                standardIndicator.style.verticalAlign = "text-top"
+                standardIndicator.alt = "solved.ac 표준"
+                standardIndicator.title = "solved.ac 표준"
                 problemInfo.appendChild(standardIndicator)
             } else {
                 chrome.storage.local.get('token', function(items) {
