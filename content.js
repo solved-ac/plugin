@@ -39,6 +39,16 @@ function getDom(url, callback) {
     request.send()
 }
 
+function getPrefs(key, after) {
+    chrome.storage.local.get([key], (value) => { after(value[key]) })
+}
+
+function setPrefs(key, value) {
+    var params = {}
+    params[key] = value
+    chrome.storage.local.set(params)
+}
+
 function initializeVoting(token, problemId, votedFlag) {
     var params = {
         "token": token
@@ -157,114 +167,122 @@ function isNotUserOrVsPage() {
     return !matchCurrentURL(/^https?:\/\/www\.acmicpc\.net\/(user|vs)\/.*$/i)
 }
 
-if (isProblemPage()) {
-    const problemId = document.querySelector("ul.problem-menu li a").innerText.replace(/[^0-9.]/g, "")
-    const problemInfo = document.querySelector("div.page-header")
+function addLevelIndicators() {
+    if (isProblemPage()) {
+        const problemId = document.querySelector("ul.problem-menu li a").innerText.replace(/[^0-9.]/g, "")
+        const problemInfo = document.querySelector("div.page-header")
 
-    getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
-        if (levelData.level == null) {
-            var description = document.createElement("span")
-            description.innerText = "아직 solved.ac 데이터베이스에 등록되지 않은 문제입니다. 내일 오전 6시부터 난이도 의견 제출이 가능합니다."
-            problemInfo.appendChild(description)
-            return
-        }
-        getJson("https://api.solved.ac/question_level_votes.php?id=" + problemId, function(difficultyVotes) {
-            const nick = document.querySelector("ul.loginbar li:first-child a").innerText.trim()
-            var votedFlag = false
+        getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
+            if (levelData.level == null) {
+                var description = document.createElement("span")
+                description.innerText = "아직 solved.ac 데이터베이스에 등록되지 않은 문제입니다. 내일 오전 6시부터 난이도 의견 제출이 가능합니다."
+                problemInfo.appendChild(description)
+                return
+            }
+            getJson("https://api.solved.ac/question_level_votes.php?id=" + problemId, function(difficultyVotes) {
+                const nick = document.querySelector("ul.loginbar li:first-child a").innerText.trim()
+                var votedFlag = false
 
-            var titleBadge = document.createElement("span")
-            titleBadge.className = "title_badge"
-            titleBadge.innerHTML = levelLabel(levelData.level) + " " + levelText(levelData.level)
-            problemInfo.appendChild(titleBadge)
-
-            if (levelData.kudeki_level) {
                 var titleBadge = document.createElement("span")
                 titleBadge.className = "title_badge"
-                titleBadge.innerHTML = " / " + kudekiLevelLabel(levelData.kudeki_level) + " " + kudekiLevelText(levelData.kudeki_level)
+                titleBadge.innerHTML = levelLabel(levelData.level) + " " + levelText(levelData.level)
                 problemInfo.appendChild(titleBadge)
-            }
 
-            var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
-
-            if (levelData.level != 0 && !standard) {
-                problemInfo.appendChild(document.createElement("br"))
-                problemInfo.appendChild(document.createElement("br"))
-                var difficultyVotesHeader = document.createElement("b")
-                difficultyVotesHeader.innerText = "난이도 의견"
-                problemInfo.appendChild(difficultyVotesHeader)
-                problemInfo.appendChild(document.createElement("br"))
-
-                for (var i = 0; i < difficultyVotes.length; i++) {
-                    var vote = difficultyVotes[i]
-                    if (vote.user_id === nick) votedFlag = true
-                    var difficultyVote = document.createElement("span")
-                    difficultyVote.className = "difficulty_vote"
-                    difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
-                                                    + "<span class=\"text-" + levelCssClass(vote.user_level) + "\">"
-                                                        + levelLabel(vote.user_level) + vote.user_id
-                                                    + "</span>"
-                                                + "</a> ➔ " + levelLabel(vote.voted_level)
-                    problemInfo.appendChild(difficultyVote)
-                }
-            }
-
-            if (standard) {
-                var standardIndicator = document.createElement("img")
-                standardIndicator.src = chrome.extension.getURL("svg/mark-verified.svg")
-                standardIndicator.style.width = "16px"
-                standardIndicator.style.height = "16px"
-                standardIndicator.style.marginLeft = "8px"
-                standardIndicator.style.verticalAlign = "text-top"
-                standardIndicator.alt = "solved.ac 표준"
-                standardIndicator.title = "solved.ac 표준"
-                problemInfo.appendChild(standardIndicator)
-            } else {
-                chrome.storage.local.get('token', function(items) {
-                    initializeVoting(items.token, problemId, votedFlag)
-                })
-            }
-        })
-    })
-}
-
-if (isNotUserOrVsPage()) {
-    var pattern = /^[/]problem[/][0-9]+$/i
-    var problemLinks = document.getElementsByTagName("a")
-    problemLinks = [].slice.call(problemLinks, 0)
-    problemLinks
-        .filter(function (item) {
-            return item.getAttribute("href") && pattern.test(item.getAttribute("href"))
-        })
-        .forEach(function (item, index) {
-            const problemId = item.getAttribute("href").split("/")[2]
-    
-            getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
                 if (levelData.kudeki_level) {
-                    item.insertAdjacentHTML('afterbegin', kudekiLevelLabel(levelData.kudeki_level))
+                    var titleBadge = document.createElement("span")
+                    titleBadge.className = "title_badge"
+                    titleBadge.innerHTML = " / " + kudekiLevelLabel(levelData.kudeki_level) + " " + kudekiLevelText(levelData.kudeki_level)
+                    problemInfo.appendChild(titleBadge)
                 }
-                item.insertAdjacentHTML('afterbegin', levelLabel(levelData.level))
+
+                var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
+
+                if (levelData.level != 0 && !standard) {
+                    problemInfo.appendChild(document.createElement("br"))
+                    problemInfo.appendChild(document.createElement("br"))
+                    var difficultyVotesHeader = document.createElement("b")
+                    difficultyVotesHeader.innerText = "난이도 의견"
+                    problemInfo.appendChild(difficultyVotesHeader)
+                    problemInfo.appendChild(document.createElement("br"))
+
+                    for (var i = 0; i < difficultyVotes.length; i++) {
+                        var vote = difficultyVotes[i]
+                        if (vote.user_id === nick) votedFlag = true
+                        var difficultyVote = document.createElement("span")
+                        difficultyVote.className = "difficulty_vote"
+                        difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
+                                                        + "<span class=\"text-" + levelCssClass(vote.user_level) + "\">"
+                                                            + levelLabel(vote.user_level) + vote.user_id
+                                                        + "</span>"
+                                                    + "</a> ➔ " + levelLabel(vote.voted_level)
+                        problemInfo.appendChild(difficultyVote)
+                    }
+                }
+
+                if (standard) {
+                    var standardIndicator = document.createElement("img")
+                    standardIndicator.src = chrome.extension.getURL("svg/mark-verified.svg")
+                    standardIndicator.style.width = "16px"
+                    standardIndicator.style.height = "16px"
+                    standardIndicator.style.marginLeft = "8px"
+                    standardIndicator.style.verticalAlign = "text-top"
+                    standardIndicator.alt = "solved.ac 표준"
+                    standardIndicator.title = "solved.ac 표준"
+                    problemInfo.appendChild(standardIndicator)
+                } else {
+                    chrome.storage.local.get('token', function(items) {
+                        initializeVoting(items.token, problemId, votedFlag)
+                    })
+                }
             })
         })
+    }
+
+    if (isNotUserOrVsPage()) {
+        var pattern = /^[/]problem[/][0-9]+$/i
+        var problemLinks = document.getElementsByTagName("a")
+        problemLinks = [].slice.call(problemLinks, 0)
+        problemLinks
+            .filter(function (item) {
+                return item.getAttribute("href") && pattern.test(item.getAttribute("href"))
+            })
+            .forEach(function (item, index) {
+                const problemId = item.getAttribute("href").split("/")[2]
+            
+                getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
+                    if (levelData.kudeki_level) {
+                        item.insertAdjacentHTML('afterbegin', kudekiLevelLabel(levelData.kudeki_level))
+                    }
+                    item.insertAdjacentHTML('afterbegin', levelLabel(levelData.level))
+                })
+            })
+    }
+
+    if (isUserPage()) {
+        var userId = document.querySelector(".page-header h1").innerText.trim()
+        var userStaticsTable = document.querySelector("#statics tbody")
+        getJson("https://api.solved.ac/user_information.php?id=" + userId, function (userData) {
+            if (!userData) return
+            var newRow = document.createElement("tr")
+            var newRowHeader = document.createElement("th")
+            newRowHeader.innerText = "solved.ac"
+            var newRowDescription = document.createElement("td")
+            newRowDescription.innerHTML = "<a href=\"https://solved.ac/" + userData.user_id + "\">"
+                                            + "<span class=\"text-" + levelCssClass(userData.level) + "\">"
+                                                + levelLabel(userData.level) + "<b>" + userData.user_id + "</b>"
+                                            + "</span>"
+                                            + "</a>"
+            newRow.appendChild(newRowHeader)
+            newRow.appendChild(newRowDescription)
+            userStaticsTable.appendChild(newRow)
+        })
+    }
 }
 
-if (isUserPage()) {
-    var userId = document.querySelector(".page-header h1").innerText.trim()
-    var userStaticsTable = document.querySelector("#statics tbody")
-    getJson("https://api.solved.ac/user_information.php?id=" + userId, function (userData) {
-        if (!userData) return
-        var newRow = document.createElement("tr")
-        var newRowHeader = document.createElement("th")
-        newRowHeader.innerText = "solved.ac"
-        var newRowDescription = document.createElement("td")
-        newRowDescription.innerHTML = "<a href=\"https://solved.ac/" + userData.user_id + "\">"
-                                        + "<span class=\"text-" + levelCssClass(userData.level) + "\">"
-                                            + levelLabel(userData.level) + "<b>" + userData.user_id + "</b>"
-                                        + "</span>"
-                                        + "</a>"
-        newRow.appendChild(newRowHeader)
-        newRow.appendChild(newRowDescription)
-        userStaticsTable.appendChild(newRow)
-    })
-}
+getPrefs('hide_indicators', (value) => {
+    if (value === undefined || JSON.parse(value) === false) {
+        addLevelIndicators();
+    }
+})
 
 $('.dropdown-toggle').dropdown()

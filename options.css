@@ -22,8 +22,8 @@ textarea, input {
 }
 
 .contents {
-    width: 360px;
-    padding: 32px;
+    width: 280px;
+    padding: 16px;
 }
 
 input[type="text"], input[type="password"] {
@@ -31,7 +31,7 @@ input[type="text"], input[type="password"] {
     max-width: 400px;
     height: auto;
     line-height: normal;
-    padding: .8em .5em;
+    padding: 8px 5px;
 }
 
 div.button {
@@ -40,4 +40,65 @@ div.button {
     font-weight: bold;
     background: #17ce3a;
     color: #fff;
+}
+
+p.hr {
+    margin: 24px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.option_item {
+    position: relative;
+    height: 32px;
+    margin-bottom: 8px;
+}
+
+.option_caption {
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: 32px;
+}
+
+.option_item .option_switch {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.option_switch, .option_switch .toggle_knob {
+    transition: all 0.2s ease-in;
+}
+
+.option_switch {
+    height: 30px;
+    width: 55px;
+    display: inline-block;
+    background-color: #ffffff;
+    margin: 2px;
+    margin-bottom: 5px;
+    border-radius: 30px;
+    cursor: pointer;
+    border: solid 1px #d2d6de;
+    box-shadow: inset 1px 1px 9px -3px rgba(4, 4, 4, 0.08), 1px 2px 6px -2px rgba(0, 0, 0, 0.01);
+}
+
+.option_switch .toggle_knob {
+    width: 28px;
+    height: 26px;
+    display: inline-block;
+    background-color: #ffffff;
+    border: solid 1px rgba(126, 126, 126, 0.07);
+    box-shadow: 0 1px 3px rgba(107, 106, 106, 0.26), 0 5px 1px rgba(107, 106, 106, 0.13);
+    border-radius: 26px;
+    margin: 1px 1px;
+}
+
+.option_switch.active {
+    background-color: #17ce3a;
+    border: solid 1px transparent;
+}
+
+.option_switch.active .toggle_knob {
+    margin-left: 24px;
 }
