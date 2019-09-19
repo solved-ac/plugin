@@ -10,14 +10,14 @@
 }
 
 .difficulty_vote {
-    display: inline-block;
-    width: 30ch;
+    display: block;
+    margin-top: 16px;
 }
 
 #problem_difficulty span.vote_caption {
     display: block;
     font-weight: bold;
-    margin-bottom: 8px;
+    margin: 16px 0 8px 0;
     font-size: initial;
 }
 
@@ -33,13 +33,42 @@
     margin-right: 1ch;
 }
 
+.difficulty_selector {
+    position: relative;
+    margin-bottom: 8px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 0 !important;
+    padding: 8px;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
 #problem_comment {
     width: 100%;
     resize: vertical;
+    border: 1px solid #ddd;
+}
+
+#problem_comment:focus {
+    border: 1px solid #85c8ea;
+}
+
+.comment_none {
+    color: #ccc;
+}
+
+.algorithm_tag {
+    display: inline-block;
+    background: #e5e5e5;
+    padding: 0 4px;
+    margin-left: 4px;
+    font-size: .9em;
 }
 
 #algorithm_input {
     width: 100%;
+    border: 1px solid #ddd;
 }
 
 .poll_shown .poll {

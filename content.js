@@ -1,10 +1,15 @@
-var s = document.createElement('script');
-s.src = chrome.runtime.getURL('3rdparty/tagify.2.28.4.min.js');
-s.onload = function() {
-    this.remove();
-};
+function loadScript(src) {
+    var s = document.createElement('script');
+    s.src = chrome.runtime.getURL(src);
+    s.onload = function() {
+        this.remove();
+    };
+    
+    (document.head || document.documentElement).appendChild(s);
+}
 
-(document.head || document.documentElement).appendChild(s);
+loadScript('3rdparty/tagify.2.28.4.min.js')
+loadScript('voting.js')
 
 function getData(url, callback) {
     var request = new XMLHttpRequest()
@@ -57,7 +62,15 @@ function setPrefs(key, value) {
     chrome.storage.local.set(params)
 }
 
-function initializeVoting(token, problemId, votedFlag) {
+function algorithmToTag(item) {
+    return {
+        value: item.full_name_ko,
+        searchBy: item.full_name_en + ',' + item.short_name_en + ',' + item.aliases,
+        algorithm_id: item.algorithm_id
+    }
+}
+
+function initializeVoting(token, problemId, defaultLevel, myVote) {
     var params = {
         "token": token
     }
@@ -72,56 +85,55 @@ function initializeVoting(token, problemId, votedFlag) {
 
         var user = response.user
         if (user.level < 16) return
-        if (!document.querySelector(".label-success")) return
-
-        const bottom = document.querySelector(".col-md-12:nth-child(4)")
-        const toggleFunction = "var o=document.getElementById('problem_difficulty');if(o.className==='poll_shown'){o.className='poll_hidden';}else{o.className='poll_shown';}"
-        var visibleState = "poll_shown"
-        if (votedFlag == true) visibleState = "poll_hidden"
-        bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"" + toggleFunction + "\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>"
-    
-        const difficultySectionConainer = document.getElementById("problem_difficulty")
-        const difficultySection = document.createElement("div")
-        difficultySection.className = "poll"
-        difficultySectionConainer.appendChild(difficultySection)
-
-        for (var i = 1; i <= 30; i++) {
-            const func = "var params={'token':'"+token+"','id':"+problemId+",'level':"+i+"};" +
-                "var o=new XMLHttpRequest;" + 
-                "o.open('POST','https://api.solved.ac/vote_difficulty.php',!0)," +
-                "o.onload=function(){if(o.status>=200&&o.status<400){location.reload()}else{alert(JSON.parse(o.responseText).error)}}," +
-                "o.send(JSON.stringify(params))"
-            difficultySection.innerHTML += "<span class=\"difficulty_icon\" onclick=\"" + func + "\">" + levelLabel(i) + "</a>"
-            if (i % 5 == 0) difficultySection.innerHTML += "<br>"
-        }
-        difficultySection.appendChild(document.createElement("br"))
-
-        const commentCaption = document.createElement("span")
-        commentCaption.className = "vote_caption"
-        commentCaption.innerText = "난이도 의견 작성"
-        difficultySection.appendChild(commentCaption)
-
-        const commentSection = document.createElement("textarea")
-        commentSection.id = "problem_comment"
-        difficultySection.appendChild(commentSection)
-        difficultySection.appendChild(document.createElement("br"))
-
+        if (!document.querySelector(".label-success") && user.user_id !== "solvedac") return
+        
         getJson("https://api.solved.ac/algorithms.php", (algorithms) => {
-            const whitelist = algorithms.map((item) => {
-                console.log(item)
-                return {
-                    value: item.full_name_ko,
-                    searchBy: item.full_name_en + ',' + item.short_name_en + ',' + item.aliases,
-                    algorithm_id: item.algorithm_id
-                }
-            })
-            console.log(whitelist);
+            const bottom = document.querySelector(".col-md-12:nth-child(4)")
+            var visibleState = "poll_shown"
+            if (myVote) visibleState = "poll_hidden"
+            bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"togglePoll()\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>"
+        
+            const difficultySectionConainer = document.getElementById("problem_difficulty")
+            const difficultySection = document.createElement("div")
+            difficultySection.className = "poll"
+            difficultySectionConainer.appendChild(difficultySection)
+
+            const commentCaption = document.createElement("span")
+            commentCaption.className = "vote_caption"
+            commentCaption.innerText = "난이도 의견"
+            difficultySection.appendChild(commentCaption)
+
+            const difficultySelector = document.createElement("select")
+            difficultySelector.name = "difficulty_selector"
+            difficultySelector.className = "difficulty_selector"
+
+            for (var i = 1; i <= 30; i++) {
+                const difficultyItem = document.createElement("option")
+                difficultyItem.value = i;
+                difficultyItem.innerText = levelName(i);
+                difficultyItem.className = levelCssClass(i);
+                difficultySelector.appendChild(difficultyItem)
+            }
+
+            difficultySelector.selectedIndex = (defaultLevel - 1);
+            difficultySection.appendChild(difficultySelector);
+            difficultySection.appendChild(document.createElement("br"))
+
+            const commentSection = document.createElement("textarea")
+            commentSection.id = "problem_comment"
+            if (myVote) commentSection.value = myVote.comment
+            difficultySection.appendChild(commentSection)
+            difficultySection.appendChild(document.createElement("br"))
+
+            const whitelist = algorithms.map(algorithmToTag)
+            var selectedAlgorithms = []
+            if (myVote) selectedAlgorithms = myVote.algorithms.map(algorithmToTag)
 
             const algorithmCaption = document.createElement("span")
             algorithmCaption.className = "vote_caption"
             algorithmCaption.innerText = "알고리즘 분류 의견"
             difficultySection.appendChild(algorithmCaption)
-    
+        
             const algorithmSection = document.createElement("input")
             algorithmSection.id = "algorithm_input"
             algorithmSection.name = "basic"
@@ -130,11 +142,21 @@ function initializeVoting(token, problemId, votedFlag) {
             const whitelistScript = document.createElement("script")
             whitelistScript.innerHTML = "var whitelist = JSON.parse(" + JSON.stringify(JSON.stringify(whitelist)) + ");"
             difficultySection.appendChild(whitelistScript)
-    
+        
             const algorithmInputScript = document.createElement("script")
-            algorithmInputScript.innerHTML = "new Tagify(document.querySelector('#algorithm_input'),"
-                                            + "{enforceWhitelist: true, whitelist: whitelist, dropdown: {enabled: 1, classname: 'algorithm_dropdown'}, delimiters: '[|]'})"
+            algorithmInputScript.innerHTML = "var algorithmSuggestionInput=new Tagify(document.querySelector('#algorithm_input'),"
+                                            + "{enforceWhitelist: true, whitelist: whitelist, dropdown: {enabled: 1, classname: 'algorithm_dropdown'}, delimiters: '[|]'});"
+                                            + "algorithmSuggestionInput.addTags(JSON.parse(" + JSON.stringify(JSON.stringify(selectedAlgorithms)) + "))"
             difficultySection.appendChild(algorithmInputScript)
+
+            const sendButton = document.createElement("button")
+            sendButton.className = "btn btn-primary"
+            sendButton.id = "poll_submit"
+            sendButton.type = "submit"
+            sendButton.innerText = "이렇게 제출하기"
+            sendButton.style.marginTop = "16px"
+            sendButton.setAttribute("onclick", "sendVote('" + token + "'," + problemId + ")")
+            difficultySection.appendChild(sendButton)
         })
     }
     xhr.send(JSON.stringify(params))
@@ -222,7 +244,8 @@ function isNotUserOrVsPage() {
 
 function addLevelIndicators() {
     if (isProblemPage()) {
-        const problemId = document.querySelector("ul.problem-menu li a").innerText.replace(/[^0-9.]/g, "")
+        const problemIdContainer = document.querySelector("ul.problem-menu li a")
+        const problemId = problemIdContainer.innerText.replace(/[^0-9.]/g, "")
         const problemInfo = document.querySelector("div.page-header")
 
         getJson("https://api.solved.ac/problem_level.php?id=" + problemId, function(levelData) {
@@ -235,6 +258,7 @@ function addLevelIndicators() {
             getJson("https://api.solved.ac/question_level_votes.php?id=" + problemId, function(difficultyVotes) {
                 const nick = document.querySelector("ul.loginbar li:first-child a").innerText.trim()
                 var votedFlag = false
+                var myVote
 
                 var titleBadge = document.createElement("span")
                 titleBadge.className = "title_badge"
@@ -250,43 +274,79 @@ function addLevelIndicators() {
 
                 var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
 
-                if (levelData.level != 0 && !standard) {
-                    problemInfo.appendChild(document.createElement("br"))
-                    problemInfo.appendChild(document.createElement("br"))
-                    var difficultyVotesHeader = document.createElement("b")
-                    difficultyVotesHeader.innerText = "난이도 의견"
-                    problemInfo.appendChild(difficultyVotesHeader)
-                    problemInfo.appendChild(document.createElement("br"))
+                getPrefs('hide_other_votes', (value) => {
+                    if (levelData.level != 0 && !standard) {
+                        for (var i = 0; i < difficultyVotes.length; i++) {
+                            var vote = difficultyVotes[i]
+                            if (vote.user_id === nick) {
+                                votedFlag = true
+                                myVote = vote
+                            }
 
-                    for (var i = 0; i < difficultyVotes.length; i++) {
-                        var vote = difficultyVotes[i]
-                        if (vote.user_id === nick) votedFlag = true
-                        var difficultyVote = document.createElement("span")
-                        difficultyVote.className = "difficulty_vote"
-                        difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
-                                                        + "<span class=\"text-" + levelCssClass(vote.user_level) + "\">"
-                                                            + levelLabel(vote.user_level) + vote.user_id
-                                                        + "</span>"
-                                                    + "</a> ➔ " + levelLabel(vote.voted_level)
-                        problemInfo.appendChild(difficultyVote)
+                            if (value === undefined || JSON.parse(value) === false) {
+                                var difficultyVote = document.createElement("div")
+                                difficultyVote.className = "difficulty_vote"
+                                difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
+                                                                + "<span class=\"text-" + levelCssClass(vote.user_level) + "\">"
+                                                                    + levelLabel(vote.user_level) + vote.user_id
+                                                                + "</span>"
+                                                            + "</a> ➔ " + levelLabel(vote.voted_level)
+                                difficultyVote.appendChild(document.createElement("br"))
+                            
+    
+                                var voteComment = document.createElement("div")
+                                voteComment.innerText = vote.comment
+                                if (!vote.comment) {
+                                    voteComment.classList.add("comment_none")
+                                    voteComment.innerText = "난이도 의견을 입력하지 않았습니다"
+                                }
+                                if (vote.algorithms) {
+                                    for (var j = 0; j < vote.algorithms.length; j++) {
+                                        var algo = vote.algorithms[j]
+                                        var algorithmTag = document.createElement("div")
+                                        algorithmTag.innerText = algo.full_name_ko
+                                        algorithmTag.className = "algorithm_tag"
+                                        voteComment.appendChild(algorithmTag)
+                                    }
+                                }
+                                difficultyVote.appendChild(voteComment)
+                            
+                                problemInfo.appendChild(difficultyVote)
+                            }
+                        }
                     }
-                }
 
-                if (standard) {
-                    var standardIndicator = document.createElement("img")
-                    standardIndicator.src = chrome.extension.getURL("svg/mark-verified.svg")
-                    standardIndicator.style.width = "16px"
-                    standardIndicator.style.height = "16px"
-                    standardIndicator.style.marginLeft = "8px"
-                    standardIndicator.style.verticalAlign = "text-top"
-                    standardIndicator.alt = "solved.ac 표준"
-                    standardIndicator.title = "solved.ac 표준"
-                    problemInfo.appendChild(standardIndicator)
-                } else {
-                    chrome.storage.local.get('token', function(items) {
-                        initializeVoting(items.token, problemId, votedFlag)
-                    })
-                }
+                    if (standard) {
+                        var standardIndicator = document.createElement("img")
+                        standardIndicator.src = chrome.extension.getURL("svg/mark-verified.svg")
+                        standardIndicator.style.width = "16px"
+                        standardIndicator.style.height = "16px"
+                        standardIndicator.style.marginLeft = "8px"
+                        standardIndicator.style.verticalAlign = "text-top"
+                        standardIndicator.alt = "solved.ac 표준"
+                        standardIndicator.title = "solved.ac 표준"
+                        problemInfo.appendChild(standardIndicator)
+    
+                        if (nick === "solvedac") {
+                            for (var i = 0; i < difficultyVotes.length; i++) {
+                                var vote = difficultyVotes[i]
+                                if (vote.user_id === nick) {
+                                    votedFlag = true
+                                    myVote = vote
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (!standard || nick === "solvedac") {
+                        chrome.storage.local.get('token', function(items) {
+                            var defaultLevel = 1
+                            if (levelData.level) defaultLevel = levelData.level
+                            if (votedFlag) defaultLevel = myVote.voted_level
+                            initializeVoting(items.token, problemId, defaultLevel, myVote)
+                        })
+                    }
+                })
             })
         })
     }

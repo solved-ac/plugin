@@ -19,7 +19,8 @@
     "web_accessible_resources": [
         "css/*.css",
         "svg/*.svg",
-        "3rdparty/tagify.2.28.4.min.js"
+        "3rdparty/tagify.2.28.4.min.js",
+        "voting.js"
     ],
     "content_scripts": [{
             "matches": [
