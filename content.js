@@ -1,3 +1,11 @@
+var s = document.createElement('script');
+s.src = chrome.runtime.getURL('3rdparty/tagify.2.28.4.min.js');
+s.onload = function() {
+    this.remove();
+};
+
+(document.head || document.documentElement).appendChild(s);
+
 function getData(url, callback) {
     var request = new XMLHttpRequest()
     request.open('GET', url, true)
@@ -72,17 +80,62 @@ function initializeVoting(token, problemId, votedFlag) {
         if (votedFlag == true) visibleState = "poll_hidden"
         bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"" + toggleFunction + "\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>"
     
-        const difficultySection = document.getElementById("problem_difficulty")
+        const difficultySectionConainer = document.getElementById("problem_difficulty")
+        const difficultySection = document.createElement("div")
+        difficultySection.className = "poll"
+        difficultySectionConainer.appendChild(difficultySection)
+
         for (var i = 1; i <= 30; i++) {
             const func = "var params={'token':'"+token+"','id':"+problemId+",'level':"+i+"};" +
                 "var o=new XMLHttpRequest;" + 
                 "o.open('POST','https://api.solved.ac/vote_difficulty.php',!0)," +
                 "o.onload=function(){if(o.status>=200&&o.status<400){location.reload()}else{alert(JSON.parse(o.responseText).error)}}," +
                 "o.send(JSON.stringify(params))"
-            difficultySection.innerHTML += "<span onclick=\"" + func + "\">" + levelLabel(i) + "</a>"
+            difficultySection.innerHTML += "<span class=\"difficulty_icon\" onclick=\"" + func + "\">" + levelLabel(i) + "</a>"
             if (i % 5 == 0) difficultySection.innerHTML += "<br>"
         }
-        difficultySection.innerHTML += "<br>"
+        difficultySection.appendChild(document.createElement("br"))
+
+        const commentCaption = document.createElement("span")
+        commentCaption.className = "vote_caption"
+        commentCaption.innerText = "난이도 의견 작성"
+        difficultySection.appendChild(commentCaption)
+
+        const commentSection = document.createElement("textarea")
+        commentSection.id = "problem_comment"
+        difficultySection.appendChild(commentSection)
+        difficultySection.appendChild(document.createElement("br"))
+
+        getJson("https://api.solved.ac/algorithms.php", (algorithms) => {
+            const whitelist = algorithms.map((item) => {
+                console.log(item)
+                return {
+                    value: item.full_name_ko,
+                    searchBy: item.full_name_en + ',' + item.short_name_en + ',' + item.aliases,
+                    algorithm_id: item.algorithm_id
+                }
+            })
+            console.log(whitelist);
+
+            const algorithmCaption = document.createElement("span")
+            algorithmCaption.className = "vote_caption"
+            algorithmCaption.innerText = "알고리즘 분류 의견"
+            difficultySection.appendChild(algorithmCaption)
+    
+            const algorithmSection = document.createElement("input")
+            algorithmSection.id = "algorithm_input"
+            algorithmSection.name = "basic"
+            difficultySection.appendChild(algorithmSection)
+
+            const whitelistScript = document.createElement("script")
+            whitelistScript.innerHTML = "var whitelist = JSON.parse(" + JSON.stringify(JSON.stringify(whitelist)) + ");"
+            difficultySection.appendChild(whitelistScript)
+    
+            const algorithmInputScript = document.createElement("script")
+            algorithmInputScript.innerHTML = "new Tagify(document.querySelector('#algorithm_input'),"
+                                            + "{enforceWhitelist: true, whitelist: whitelist, dropdown: {enabled: 1, classname: 'algorithm_dropdown'}, delimiters: '[|]'})"
+            difficultySection.appendChild(algorithmInputScript)
+        })
     }
     xhr.send(JSON.stringify(params))
 }

@@ -1,4 +1,4 @@
-#problem_difficulty span {
+#problem_difficulty span.difficulty_icon {
     font-size: 3rem;
 }
 
@@ -14,6 +14,13 @@
     width: 30ch;
 }
 
+#problem_difficulty span.vote_caption {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: initial;
+}
+
 .level_badge.small {
     line-height: inherit;
     width: 1.1em;
@@ -26,14 +33,20 @@
     margin-right: 1ch;
 }
 
-.poll_shown img,
-.poll_shown br {
+#problem_comment {
+    width: 100%;
+    resize: vertical;
+}
+
+#algorithm_input {
+    width: 100%;
+}
+
+.poll_shown .poll {
     display: inherit;
 }
 
-.poll_hidden span,
-.poll_hidden img,
-.poll_hidden br {
+.poll_hidden .poll {
     display: none;
 }
 

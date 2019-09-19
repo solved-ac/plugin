@@ -13,5 +13,5 @@ const inject = localCss => {
 const url = window.location.href
 if (url.includes('acmicpc.net')) {
 	inject('override-commons.css')
-	inject('tagify.css')
+	inject('tagify.min.css')
 }
