@@ -62,11 +62,19 @@ function setPrefs(key, value) {
     chrome.storage.local.set(params)
 }
 
-function algorithmToTag(item) {
-    return {
-        value: item.full_name_ko,
-        searchBy: item.full_name_en + ',' + item.short_name_en + ',' + item.aliases,
-        algorithm_id: item.algorithm_id
+function algorithmToTag(item, showTagsInEnglish) {
+    if (showTagsInEnglish) {
+        return {
+            value: item.full_name_en,
+            searchBy: item.full_name_ko + ',' + item.short_name_en + ',' + item.aliases,
+            algorithm_id: item.algorithm_id
+        }
+    } else {
+        return {
+            value: item.full_name_ko,
+            searchBy: item.full_name_en + ',' + item.short_name_en + ',' + item.aliases,
+            algorithm_id: item.algorithm_id
+        }
     }
 }
 
@@ -88,75 +96,77 @@ function initializeVoting(token, problemId, defaultLevel, myVote) {
         if (!document.querySelector(".label-success") && user.user_id !== "solvedac") return
         
         getJson("https://api.solved.ac/algorithms.php", (algorithms) => {
-            const bottom = document.querySelector(".col-md-12:nth-child(4)")
-            var visibleState = "poll_shown"
-            if (myVote) visibleState = "poll_hidden"
-            bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"togglePoll()\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>"
-        
-            const difficultySectionConainer = document.getElementById("problem_difficulty")
-            const difficultySection = document.createElement("div")
-            difficultySection.className = "poll"
-            difficultySectionConainer.appendChild(difficultySection)
+            getPrefs('show_tags_in_english', (showTagsInEnglish) => {
+                const bottom = document.querySelector(".col-md-12:nth-child(4)")
+                var visibleState = "poll_shown"
+                if (myVote) visibleState = "poll_hidden"
+                bottom.outerHTML += "<div class=\"col-md-12\"><section id=\"problem_difficulty\" class=\"" + visibleState + "\"><div class=\"headline\" onclick=\"togglePoll()\"><h2>난이도 투표 <small>펼치기/접기</small></h2></div></section></div>"
+                
+                const difficultySectionConainer = document.getElementById("problem_difficulty")
+                const difficultySection = document.createElement("div")
+                difficultySection.className = "poll"
+                difficultySectionConainer.appendChild(difficultySection)
 
-            const commentCaption = document.createElement("span")
-            commentCaption.className = "vote_caption"
-            commentCaption.innerText = "난이도 의견"
-            difficultySection.appendChild(commentCaption)
+                const commentCaption = document.createElement("span")
+                commentCaption.className = "vote_caption"
+                commentCaption.innerText = "난이도 의견"
+                difficultySection.appendChild(commentCaption)
 
-            const difficultySelector = document.createElement("select")
-            difficultySelector.name = "difficulty_selector"
-            difficultySelector.className = "difficulty_selector"
+                const difficultySelector = document.createElement("select")
+                difficultySelector.name = "difficulty_selector"
+                difficultySelector.className = "difficulty_selector"
 
-            for (var i = 1; i <= 30; i++) {
-                const difficultyItem = document.createElement("option")
-                difficultyItem.value = i;
-                difficultyItem.innerText = levelName(i);
-                difficultyItem.className = levelCssClass(i);
-                difficultySelector.appendChild(difficultyItem)
-            }
+                for (var i = 1; i <= 30; i++) {
+                    const difficultyItem = document.createElement("option")
+                    difficultyItem.value = i;
+                    difficultyItem.innerText = levelName(i);
+                    difficultyItem.className = levelCssClass(i);
+                    difficultySelector.appendChild(difficultyItem)
+                }
 
-            difficultySelector.selectedIndex = (defaultLevel - 1);
-            difficultySection.appendChild(difficultySelector);
-            difficultySection.appendChild(document.createElement("br"))
+                difficultySelector.selectedIndex = (defaultLevel - 1);
+                difficultySection.appendChild(difficultySelector);
+                difficultySection.appendChild(document.createElement("br"))
 
-            const commentSection = document.createElement("textarea")
-            commentSection.id = "problem_comment"
-            if (myVote) commentSection.value = myVote.comment
-            difficultySection.appendChild(commentSection)
-            difficultySection.appendChild(document.createElement("br"))
+                const commentSection = document.createElement("textarea")
+                commentSection.id = "problem_comment"
+                if (myVote) commentSection.value = myVote.comment
+                difficultySection.appendChild(commentSection)
+                difficultySection.appendChild(document.createElement("br"))
 
-            const whitelist = algorithms.map(algorithmToTag)
-            var selectedAlgorithms = []
-            if (myVote) selectedAlgorithms = myVote.algorithms.map(algorithmToTag)
+                const whitelist = algorithms.map(algorithmToTag, showTagsInEnglish)
+                var selectedAlgorithms = []
+                if (myVote) selectedAlgorithms = myVote.algorithms.map(algorithmToTag, showTagsInEnglish)
 
-            const algorithmCaption = document.createElement("span")
-            algorithmCaption.className = "vote_caption"
-            algorithmCaption.innerText = "알고리즘 분류 의견"
-            difficultySection.appendChild(algorithmCaption)
-        
-            const algorithmSection = document.createElement("input")
-            algorithmSection.id = "algorithm_input"
-            algorithmSection.name = "basic"
-            difficultySection.appendChild(algorithmSection)
+                const algorithmCaption = document.createElement("span")
+                algorithmCaption.className = "vote_caption"
+                algorithmCaption.innerText = "알고리즘 분류 의견"
+                difficultySection.appendChild(algorithmCaption)
+            
+                const algorithmSection = document.createElement("input")
+                algorithmSection.id = "algorithm_input"
+                algorithmSection.name = "basic"
+                difficultySection.appendChild(algorithmSection)
 
-            const whitelistScript = document.createElement("script")
-            whitelistScript.innerHTML = "var whitelist = JSON.parse(" + JSON.stringify(JSON.stringify(whitelist)) + ");"
-            difficultySection.appendChild(whitelistScript)
-        
-            const algorithmInputScript = document.createElement("script")
-            algorithmInputScript.innerHTML = "var algorithmSuggestionInput=new Tagify(document.querySelector('#algorithm_input'),"
-                                            + "{enforceWhitelist: true, whitelist: whitelist, dropdown: {enabled: 1, classname: 'algorithm_dropdown'}, delimiters: '[|]'});"
-                                            + "algorithmSuggestionInput.addTags(JSON.parse(" + JSON.stringify(JSON.stringify(selectedAlgorithms)) + "))"
-            difficultySection.appendChild(algorithmInputScript)
+                const whitelistScript = document.createElement("script")
+                whitelistScript.innerHTML = "var whitelist = JSON.parse(" + JSON.stringify(JSON.stringify(whitelist)) + ");"
+                difficultySection.appendChild(whitelistScript)
+            
+                const algorithmInputScript = document.createElement("script")
+                algorithmInputScript.innerHTML = "var algorithmSuggestionInput=new Tagify(document.querySelector('#algorithm_input'),"
+                                                + "{enforceWhitelist: true, whitelist: whitelist, dropdown: {enabled: 1, classname: 'algorithm_dropdown'}, delimiters: '[|]'});"
+                                                + "algorithmSuggestionInput.addTags(JSON.parse(" + JSON.stringify(JSON.stringify(selectedAlgorithms)) + "))"
+                difficultySection.appendChild(algorithmInputScript)
 
-            const sendButton = document.createElement("button")
-            sendButton.className = "btn btn-primary"
-            sendButton.id = "poll_submit"
-            sendButton.type = "submit"
-            sendButton.innerText = "이렇게 제출하기"
-            sendButton.style.marginTop = "16px"
-            sendButton.setAttribute("onclick", "sendVote('" + token + "'," + problemId + ")")
-            difficultySection.appendChild(sendButton)
+                const sendButton = document.createElement("button")
+                sendButton.className = "btn btn-primary"
+                sendButton.id = "poll_submit"
+                sendButton.type = "submit"
+                sendButton.innerText = "이렇게 제출하기"
+                sendButton.style.marginTop = "16px"
+                sendButton.setAttribute("onclick", "sendVote('" + token + "'," + problemId + ")")
+                difficultySection.appendChild(sendButton)
+            })
         })
     }
     xhr.send(JSON.stringify(params))
@@ -274,7 +284,7 @@ function addLevelIndicators() {
 
                 var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
 
-                getPrefs('hide_other_votes', (value) => {
+                getPrefs('hide_other_votes', (hideOtherVotes) => {
                     if (!document.querySelector(".label-success") && user.user_id !== "solvedac") return
                     if (levelData.level != 0 && !standard) {
                         for (var i = 0; i < difficultyVotes.length; i++) {
@@ -284,7 +294,7 @@ function addLevelIndicators() {
                                 myVote = vote
                             }
 
-                            if (value === undefined || JSON.parse(value) === false) {
+                            if (hideOtherVotes === undefined || JSON.parse(hideOtherVotes) === false) {
                                 var difficultyVote = document.createElement("div")
                                 difficultyVote.className = "difficulty_vote"
                                 difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
@@ -302,13 +312,19 @@ function addLevelIndicators() {
                                     voteComment.innerText = "난이도 의견을 입력하지 않았습니다"
                                 }
                                 if (vote.algorithms) {
-                                    for (var j = 0; j < vote.algorithms.length; j++) {
-                                        var algo = vote.algorithms[j]
-                                        var algorithmTag = document.createElement("div")
-                                        algorithmTag.innerText = algo.full_name_ko
-                                        algorithmTag.className = "algorithm_tag"
-                                        voteComment.appendChild(algorithmTag)
-                                    }
+                                    getPrefs('show_tags_in_english', (showTagsInEnglish) => {
+                                        for (var j = 0; j < vote.algorithms.length; j++) {
+                                            var algo = vote.algorithms[j]
+                                            var algorithmTag = document.createElement("div")
+                                            if (JSON.parse(showTagsInEnglish) === true) {
+                                                algorithmTag.innerText = algo.full_name_en
+                                            } else {
+                                                algorithmTag.innerText = algo.full_name_ko
+                                            }
+                                            algorithmTag.className = "algorithm_tag"
+                                            voteComment.appendChild(algorithmTag)
+                                        }
+                                    })
                                 }
                                 difficultyVote.appendChild(voteComment)
                             
