@@ -275,6 +275,7 @@ function addLevelIndicators() {
                 var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
 
                 getPrefs('hide_other_votes', (value) => {
+                    if (!document.querySelector(".label-success") && user.user_id !== "solvedac") return
                     if (levelData.level != 0 && !standard) {
                         for (var i = 0; i < difficultyVotes.length; i++) {
                             var vote = difficultyVotes[i]
