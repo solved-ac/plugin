@@ -14,6 +14,12 @@
     margin-top: 16px;
 }
 
+.difficulty_vote_container {
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 180px;
+}
+
 #problem_difficulty span.vote_caption {
     display: block;
     font-weight: bold;
@@ -61,6 +67,7 @@
 .algorithm_tag {
     display: inline-block;
     background: #e5e5e5;
+    color: #000;
     padding: 0 4px;
     margin-left: 4px;
     font-size: .9em;

@@ -285,8 +285,11 @@ function addLevelIndicators() {
                 var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
 
                 getPrefs('hide_other_votes', (hideOtherVotes) => {
-                    if (!document.querySelector(".label-success") && user.user_id !== "solvedac") return
+                    if (!document.querySelector(".label-success") && nick !== "solvedac") return
                     if (levelData.level != 0 && !standard) {
+                        var difficultyVotesContainer = document.createElement("div");
+                        difficultyVotesContainer.className = "difficulty_vote_container"
+
                         for (var i = 0; i < difficultyVotes.length; i++) {
                             var vote = difficultyVotes[i]
                             if (vote.user_id === nick) {
@@ -328,9 +331,11 @@ function addLevelIndicators() {
                                 }
                                 difficultyVote.appendChild(voteComment)
                             
-                                problemInfo.appendChild(difficultyVote)
+                                difficultyVotesContainer.appendChild(difficultyVote)
                             }
                         }
+
+                        problemInfo.appendChild(difficultyVotesContainer)
                     }
 
                     if (standard) {
