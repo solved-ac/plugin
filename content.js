@@ -134,9 +134,9 @@ function initializeVoting(token, problemId, defaultLevel, myVote) {
                 difficultySection.appendChild(commentSection)
                 difficultySection.appendChild(document.createElement("br"))
 
-                const whitelist = algorithms.map(algorithmToTag, showTagsInEnglish)
+                const whitelist = algorithms.map((algo) => algorithmToTag(algo, showTagsInEnglish))
                 var selectedAlgorithms = []
-                if (myVote) selectedAlgorithms = myVote.algorithms.map(algorithmToTag, showTagsInEnglish)
+                if (myVote) selectedAlgorithms = myVote.algorithms.map((algo) => algorithmToTag(algo, showTagsInEnglish))
 
                 const algorithmCaption = document.createElement("span")
                 algorithmCaption.className = "vote_caption"
@@ -285,58 +285,59 @@ function addLevelIndicators() {
                 var standard = (difficultyVotes.length > 0 && difficultyVotes[0].user_id == "solvedac")
 
                 getPrefs('hide_other_votes', (hideOtherVotes) => {
+                    getPrefs('show_tags_in_english', (showTagsInEnglish) => {
+
                     if (!document.querySelector(".label-success") && nick !== "solvedac") return
-                    if (levelData.level != 0 && !standard) {
-                        var difficultyVotesContainer = document.createElement("div");
-                        difficultyVotesContainer.className = "difficulty_vote_container"
-
-                        for (var i = 0; i < difficultyVotes.length; i++) {
-                            var vote = difficultyVotes[i]
-                            if (vote.user_id === nick) {
-                                votedFlag = true
-                                myVote = vote
-                            }
-
-                            if (hideOtherVotes === undefined || JSON.parse(hideOtherVotes) === false) {
-                                var difficultyVote = document.createElement("div")
-                                difficultyVote.className = "difficulty_vote"
-                                difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
-                                                                + "<span class=\"text-" + levelCssClass(vote.user_level) + "\">"
-                                                                    + levelLabel(vote.user_level) + vote.user_id
-                                                                + "</span>"
-                                                            + "</a> ➔ " + levelLabel(vote.voted_level)
-                                difficultyVote.appendChild(document.createElement("br"))
+                        if (levelData.level != 0 && !standard) {
+                            var difficultyVotesContainer = document.createElement("div");
+                            difficultyVotesContainer.className = "difficulty_vote_container"
                             
-    
-                                var voteComment = document.createElement("div")
-                                voteComment.innerText = vote.comment
-                                if (!vote.comment) {
-                                    voteComment.classList.add("comment_none")
-                                    voteComment.innerText = "난이도 의견을 입력하지 않았습니다"
+                            for (var i = 0; i < difficultyVotes.length; i++) {
+                                var vote = difficultyVotes[i]
+                                if (vote.user_id === nick) {
+                                    votedFlag = true
+                                    myVote = vote
                                 }
-                                if (vote.algorithms) {
-                                    getPrefs('show_tags_in_english', (showTagsInEnglish) => {
-                                        for (var j = 0; j < vote.algorithms.length; j++) {
-                                            var algo = vote.algorithms[j]
-                                            var algorithmTag = document.createElement("div")
-                                            if (JSON.parse(showTagsInEnglish) === true) {
-                                                algorithmTag.innerText = algo.full_name_en
-                                            } else {
-                                                algorithmTag.innerText = algo.full_name_ko
+                            
+                                if (hideOtherVotes === undefined || JSON.parse(hideOtherVotes) === false) {
+                                    var difficultyVote = document.createElement("div")
+                                    difficultyVote.className = "difficulty_vote"
+                                    difficultyVote.innerHTML = "<a href=\"/user/" + vote.user_id + "\">"
+                                                                    + "<span class=\"text-" + levelCssClass(vote.user_level) + "\">"
+                                                                        + levelLabel(vote.user_level) + vote.user_id
+                                                                    + "</span>"
+                                                                + "</a> ➔ " + levelLabel(vote.voted_level)
+                                    difficultyVote.appendChild(document.createElement("br"))
+                                
+                                
+                                    var voteComment = document.createElement("div")
+                                    voteComment.innerText = vote.comment
+                                    if (!vote.comment) {
+                                        voteComment.classList.add("comment_none")
+                                        voteComment.innerText = "난이도 의견을 입력하지 않았습니다"
+                                    }
+                                    if (vote.algorithms) {
+                                            for (var j = 0; j < vote.algorithms.length; j++) {
+                                                var algo = vote.algorithms[j]
+                                                var algorithmTag = document.createElement("div")
+                                                if (showTagsInEnglish !== undefined && JSON.parse(showTagsInEnglish) === true) {
+                                                    algorithmTag.innerText = algo.full_name_en
+                                                } else {
+                                                    algorithmTag.innerText = algo.full_name_ko
+                                                }
+                                                algorithmTag.className = "algorithm_tag"
+                                                voteComment.appendChild(algorithmTag)
                                             }
-                                            algorithmTag.className = "algorithm_tag"
-                                            voteComment.appendChild(algorithmTag)
-                                        }
-                                    })
+                                    }
+                                    difficultyVote.appendChild(voteComment)
+                                
+                                    difficultyVotesContainer.appendChild(difficultyVote)
                                 }
-                                difficultyVote.appendChild(voteComment)
-                            
-                                difficultyVotesContainer.appendChild(difficultyVote)
                             }
+                        
+                            problemInfo.appendChild(difficultyVotesContainer)
                         }
-
-                        problemInfo.appendChild(difficultyVotesContainer)
-                    }
+                    })
 
                     if (standard) {
                         var standardIndicator = document.createElement("img")
