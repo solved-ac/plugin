@@ -55,8 +55,3 @@ function sendVote(token, problemId) {
     }
     o.send(JSON.stringify(params));
 }
-
-document.querySelector("problem_comment")
-    .addEventListener("keydown", function (event) { onPollKeyDown(event); });
-document.querySelector("algorithm_input")
-    .addEventListener("keydown", function (event) { onPollKeyDown(event); });
