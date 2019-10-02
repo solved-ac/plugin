@@ -1,7 +1,9 @@
-loadScript('injected/tagify.2.28.4.min.js')
-loadScript('injected/voting.js')
+loadScript('/src/injected/tagify.2.28.4.min.js')
+loadScript('/src/injected/voting.js')
 
-async function initializeVoting(token, problemId, defaultLevel, myVote) {
+async function initializeVoting(problemId, defaultLevel, myVote) {
+    const token = await getPrefs('token')
+
     var params = {
         "token": token
     }
@@ -208,12 +210,10 @@ async function addLevelIndicators() {
         }
         
         if (!standard || nick === "solvedac") {
-            chrome.storage.local.get('token', function(items) {
-                var defaultLevel = 1
-                if (levelData.level) defaultLevel = levelData.level
-                if (votedFlag) defaultLevel = myVote.voted_level
-                initializeVoting(items.token, problemId, defaultLevel, myVote)
-            })
+            var defaultLevel = 1
+            if (levelData.level) defaultLevel = levelData.level
+            if (votedFlag) defaultLevel = myVote.voted_level
+            initializeVoting(problemId, defaultLevel, myVote)
         }
     }
 
