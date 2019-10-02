@@ -19,8 +19,8 @@
     "web_accessible_resources": [
         "css/*.css",
         "svg/*.svg",
-        "3rdparty/tagify.2.28.4.min.js",
-        "voting.js"
+        "injected/tagify.2.28.4.min.js",
+        "injected/voting.js"
     ],
     "content_scripts": [{
             "matches": [
@@ -30,13 +30,13 @@
             "js": [
                 "3rdparty/jquery.3.4.1.min.js",
 				"3rdparty/bootstrap.3.2.0.min.js",
-				"3rdparty/tagify.2.28.4.min.js",
-                "content.js",
-                "inject_stylesheet.js"
+                "src/content/utils.js",
+                "src/content/main.js",
+                "src/content/inject_stylesheet.js"
             ]
         }
     ],
     "browser_action": {
-        "default_popup": "options_login.html"
+        "default_popup": "src/options/options_login.html"
     }
 }

@@ -11,7 +11,7 @@ const logout = () => {
 			const code = 'window.location.reload();'
 			chrome.tabs.executeScript(id, { code })
 		})
-		window.location.href = '/options_login.html'
+		window.location.href = '/src/options/options_login.html'
 	})
 }
 

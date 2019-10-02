@@ -6,14 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" type="text/css" href="https://solved.ac/css/fonts/inter/inter.css">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto+Sans+KR:400,700">
-    <link rel="stylesheet" href="options.css">
+    <link rel="stylesheet" href="/css/options.css">
     <title>Options</title>
 </head>
 <body>
     <div class="contents">
-        <h1 id="user_id">...</h1>
+        <h3 class="input_caption">BOJ 닉네임</h3>
+        <input type="text" name="user_id" id="user_id"><br>
 
-        <div id="submit" class="button">로그아웃</div>
+        <h3 class="input_caption">비밀번호</h3>
+        <input type="password" name="password" id="password"><br>
+
+        <br>
+        <div id="submit" class="button">로그인</div>
 
         <p class="hr"></p>
 
@@ -42,8 +47,8 @@
             </span>
         </div>
 	</div>
-	<script src="3rdparty/axios.0.19.0.min.js"></script>
-    <script src="options_logged_info.js"></script>
-    <script src="options_commons.js"></script>
+	<script src="/3rdparty/axios.0.19.0.min.js"></script>
+    <script src="/src/options/options_login.js"></script>
+    <script src="/src/options/options_commons.js"></script>
 </body>
 </html>

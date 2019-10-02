@@ -1,6 +1,6 @@
 chrome.storage.local.get(['token'], ({ token }) => {
 	debugger
-	if (token) window.location.href = '/options_logged_info.html'
+	if (token) window.location.href = '/src/options/options_logged_info.html'
 })
 
 const submitButton = document.getElementById('submit')
@@ -24,7 +24,7 @@ const validate = () => {
 					const code = 'window.location.reload();'
 					chrome.tabs.executeScript(id, { code })
 				})
-				window.location.href = '/options_logged_info.html'
+				window.location.href = '/src/options/options_logged_info.html'
 			})
 		})
 		.catch(({ message }) => alert(message))
