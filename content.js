@@ -246,6 +246,10 @@ function matchCurrentURL(regex) {
     return regex.test(window.location.toString())
 }
 
+function isBOJStack() {
+    return matchCurrentURL(/^https?:\/\/stack\.acmicpc\.net\/.*?$/i)
+}
+
 function isProblemPage() {
     return matchCurrentURL(/^https?:\/\/www\.acmicpc\.net\/problem\/[0-9]+\/?$/i)
 }
@@ -422,9 +426,10 @@ function addLevelIndicators() {
 }
 
 getPrefs('hide_indicators', (value) => {
+    if (isBOJStack()) return
     if (value === undefined || JSON.parse(value) === false) {
         addLevelIndicators();
     }
 })
 
-$('.dropdown-toggle').dropdown()
+if (!isBOJStack()) $('.dropdown-toggle').dropdown()
