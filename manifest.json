@@ -1,6 +1,6 @@
 {
     "name": "solved.ac",
-    "version": "1.2.1.1",
+    "version": "1.2.2",
     "description": "Problem difficulty informations for BOJ",
     "manifest_version": 2,
     "author": "shiftpsh",
@@ -28,7 +28,7 @@
             ],
             "all_frames": true,
             "js": [
-                "3rdparty/jquery.3.3.1.min.js",
+                "3rdparty/jquery.3.4.1.min.js",
 				"3rdparty/bootstrap.3.2.0.min.js",
 				"3rdparty/tagify.2.28.4.min.js",
                 "content.js",
