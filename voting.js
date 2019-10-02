@@ -1,3 +1,12 @@
+var simulateClick = function (elem) {
+	var evt = new MouseEvent('click', {
+		bubbles: true,
+		cancelable: true,
+		view: window
+	});
+	var canceled = !elem.dispatchEvent(evt);
+};
+
 function togglePoll() {
     var poll = document.querySelector('#problem_difficulty');
 
@@ -8,6 +17,14 @@ function togglePoll() {
         poll.classList.remove('poll_shown');
         poll.classList.add('poll_hidden');
     }
+}
+
+function onPollKeyDown(event) {
+    if ((event.ctrlKey || event.metaKey) && event.keyCode == 13) {
+        simulateClick(document.querySelector("#poll_submit"));
+        return false;
+    }
+    return true;
 }
 
 function sendVote(token, problemId) {
@@ -38,3 +55,8 @@ function sendVote(token, problemId) {
     }
     o.send(JSON.stringify(params));
 }
+
+document.querySelector("problem_comment")
+    .addEventListener("keydown", function (event) { onPollKeyDown(event); });
+document.querySelector("algorithm_input")
+    .addEventListener("keydown", function (event) { onPollKeyDown(event); });

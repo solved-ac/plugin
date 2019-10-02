@@ -116,11 +116,15 @@ function initializeVoting(token, problemId, defaultLevel, myVote) {
                 difficultySelector.name = "difficulty_selector"
                 difficultySelector.className = "difficulty_selector"
 
-                for (var i = 1; i <= 30; i++) {
+                var difficultyValueMin = 1
+                if (user.user_id === "solvedac") {
+                    difficultyValueMin = 0
+                }
+                for (var i = difficultyValueMin; i <= 30; i++) {
                     const difficultyItem = document.createElement("option")
-                    difficultyItem.value = i;
-                    difficultyItem.innerText = levelName(i);
-                    difficultyItem.className = levelCssClass(i);
+                    difficultyItem.value = i
+                    difficultyItem.innerText = levelName(i)
+                    difficultyItem.className = levelCssClass(i)
                     difficultySelector.appendChild(difficultyItem)
                 }
 
@@ -130,6 +134,7 @@ function initializeVoting(token, problemId, defaultLevel, myVote) {
 
                 const commentSection = document.createElement("textarea")
                 commentSection.id = "problem_comment"
+                commentSection.setAttribute("onkeydown", "onPollKeyDown(event)")
                 if (myVote) commentSection.value = myVote.comment
                 difficultySection.appendChild(commentSection)
                 difficultySection.appendChild(document.createElement("br"))
@@ -146,6 +151,7 @@ function initializeVoting(token, problemId, defaultLevel, myVote) {
                 const algorithmSection = document.createElement("input")
                 algorithmSection.id = "algorithm_input"
                 algorithmSection.name = "basic"
+                algorithmSection.setAttribute("onkeydown", "onPollKeyDown(event)")
                 difficultySection.appendChild(algorithmSection)
 
                 const whitelistScript = document.createElement("script")
