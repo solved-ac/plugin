@@ -239,19 +239,51 @@ async function addLevelIndicators() {
     if (isUserPage()) {
         var userId = document.querySelector(".page-header h1").innerText.trim()
         var userStaticsTable = document.querySelector("#statics tbody")
-
+        const isShowUserTempTier = JSON.parse(await getPrefs('show_userpage_temp_tier', 'false'))
         const userData = await (await fetch("https://api.solved.ac/user_information.php?id=" + userId)).json()
-        if (!userData) return
 
+        if (!userData &&!isShowUserTempTier) return
+        
         var newRow = document.createElement("tr")
         var newRowHeader = document.createElement("th")
-        newRowHeader.innerText = "solved.ac"
         var newRowDescription = document.createElement("td")
-        newRowDescription.innerHTML = "<a href=\"https://solved.ac/" + userData.user_id + "\">"
-                                        + "<span class=\"text-" + levelCssClass(userData.level) + "\">"
-                                            + levelLabel(userData.level) + "<b>" + userData.user_id + "</b>"
-                                        + "</span>"
-                                        + "</a>"
+
+        if(!userData && isShowUserTempTier)
+        {
+            var acceptPanel = document.querySelector(".panel.panel-default")
+            var acceptProblems = acceptPanel.querySelectorAll(".problem_number>a")
+            var totalExpPoint = 0
+            var promises = [];
+
+            for(i = 0; i< acceptProblems.length;i++){
+                var problemId = acceptProblems[i].textContent;
+                promises[i] = fetch("https://api.solved.ac/problem_level.php?id=" + problemId)
+            }
+            
+            responses = await Promise.all(promises);
+            for(i = 0;i<responses.length;i++){
+                data = await responses[i].json()
+                totalExpPoint+= getExpPointFromLevel(data.level)
+            }
+
+            var expectLevel = getExpectLevelFromExpPoint(totalExpPoint)
+            newRowHeader.innerText = "solved.ac 임시티어"
+            newRowDescription.innerHTML = "<a href=\"https://boj.com/" + userId + "\">"
+            + "<span class=\"text-" + levelCssClass(expectLevel) + "\">"
+                + levelLabel(expectLevel) + "<b>" +userId + "</b>"
+            + "</span>"
+            + "</a>"
+        }
+        else
+        {
+            newRowHeader.innerText = "solved.ac"
+            newRowDescription.innerHTML = "<a href=\"https://solved.ac/" + userData.user_id + "\">"
+            + "<span class=\"text-" + levelCssClass(userData.level) + "\">"
+                + levelLabel(userData.level) + "<b>" + userData.user_id + "</b>"
+            + "</span>"
+            + "</a>"
+        }
+
         newRow.appendChild(newRowHeader)
         newRow.appendChild(newRowDescription)
         userStaticsTable.appendChild(newRow)
