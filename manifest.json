@@ -19,7 +19,7 @@
     "web_accessible_resources": [
         "css/*.css",
         "svg/*.svg",
-        "src/injected/tagify.2.28.4.min.js",
+        "src/injected/tagify.2.31.3.min.js",
         "src/injected/voting.js"
     ],
     "content_scripts": [{

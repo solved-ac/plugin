@@ -1,4 +1,4 @@
-loadScript('/src/injected/tagify.2.28.4.min.js')
+loadScript('/src/injected/tagify.2.31.3.min.js')
 loadScript('/src/injected/voting.js')
 
 async function initializeVoting(problemId, defaultLevel, myVote) {
@@ -89,7 +89,7 @@ async function initializeVoting(problemId, defaultLevel, myVote) {
 
     const algorithmInputScript = document.createElement("script")
     algorithmInputScript.innerHTML = "var algorithmSuggestionInput=new Tagify(document.querySelector('#algorithm_input'),"
-                                    + "{enforceWhitelist: true, whitelist: whitelist, dropdown: {enabled: 1, classname: 'algorithm_dropdown'}, delimiters: '[|]'});"
+                                    + "{enforceWhitelist: true, whitelist: whitelist, autocomplete: false, dropdown: {enabled: 1, classname: 'algorithm_dropdown', maxItems: Infinity, highlightFirst: true}});"
                                     + "algorithmSuggestionInput.addTags(JSON.parse(" + JSON.stringify(JSON.stringify(selectedAlgorithms)) + "))"
     difficultySection.appendChild(algorithmInputScript)
 
@@ -264,5 +264,3 @@ getPrefs('hide_indicators', 'false')
             addLevelIndicators();
         }
     })
-
-if (!isBOJStack()) $('.dropdown-toggle').dropdown()
