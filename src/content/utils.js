@@ -105,20 +105,12 @@ function algorithmToTag(item, showTagsInEnglish) {
     }
 }
 
-function getExpPointFromLevel(level){
-    const levelData = [320, 480, 912, 1642, 2791, 4465, 6698, 9913, 14472, 20840, 29593, 
-                       41431, 57588, 79472, 108877, 148072, 200638, 270862, 364309, 488174, 
-                       651712, 866777, 1148479, 1515993, 1993531, 2611525, 3408040, 4430452,
-                       5737436, 7401292, 9510661]
-    return levelData[level]
-}
-
-function getExpectLevelFromExpPoint(exp){
+function getExpectLevelFromExpPoint(exp) {
     const expTable = [0, 4800, 15740, 38720, 83400, 163700, 298000, 785400, 1202800, 1795000, 2834700,
                       4276000, 6261000, 8982000, 12704000, 18796000, 26842000, 37941000, 52792000, 
                       720000000, 152000000, 213000000, 294000000, 380000000, 639000000, 1000000000, 
                       1200000000, 1500000000]
-    for(i=0;i<expTable.length-1;i++){
+    for(i=0;i<expTable.length-1;i++) {
         if(expTable[i] < exp && exp < expTable[i+1])
             return i+1;
     }

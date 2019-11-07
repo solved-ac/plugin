@@ -248,34 +248,37 @@ async function addLevelIndicators() {
         var newRowHeader = document.createElement("th")
         var newRowDescription = document.createElement("td")
 
-        if(!userData && isShowUserTempTier)
-        {
+        if(!userData && isShowUserTempTier) {
             var acceptPanel = document.querySelector(".panel.panel-default")
             var acceptProblems = acceptPanel.querySelectorAll(".problem_number>a")
             var totalExpPoint = 0
             var promises = [];
+            var levelData = []
 
-            for(i = 0; i< acceptProblems.length;i++){
+            const levelDataResponses = await (await fetch("https://api.solved.ac/exp_table.php")).text()
+            levelDataResponses.split(',').forEach(level=>levelData.push(parseInt(level)));
+
+            for(i = 0; i< acceptProblems.length;i++) {
                 var problemId = acceptProblems[i].textContent;
                 promises[i] = fetch("https://api.solved.ac/problem_level.php?id=" + problemId)
             }
             
             responses = await Promise.all(promises);
-            for(i = 0;i<responses.length;i++){
+            for(i = 0;i<responses.length;i++) {
                 data = await responses[i].json()
-                totalExpPoint+= getExpPointFromLevel(data.level)
+                if(data.level != 0)
+                    totalExpPoint+= levelData[data.level]
             }
-
+            
             var expectLevel = getExpectLevelFromExpPoint(totalExpPoint)
             newRowHeader.innerText = "solved.ac 임시티어"
-            newRowDescription.innerHTML = "<a href=\"https://boj.com/" + userId + "\">"
+            newRowDescription.innerHTML = "<a href=\"https://www.acmicpc.net/user/" + userId + "\">"
             + "<span class=\"text-" + levelCssClass(expectLevel) + "\">"
                 + levelLabel(expectLevel) + "<b>" +userId + "</b>"
             + "</span>"
             + "</a>"
         }
-        else
-        {
+        else {
             newRowHeader.innerText = "solved.ac"
             newRowDescription.innerHTML = "<a href=\"https://solved.ac/" + userData.user_id + "\">"
             + "<span class=\"text-" + levelCssClass(userData.level) + "\">"
