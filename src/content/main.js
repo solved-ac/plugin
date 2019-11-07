@@ -105,6 +105,8 @@ async function initializeVoting(problemId, defaultLevel, myVote) {
 
 async function addLevelIndicators() {
     if (isProblemPage()) {
+        const token = await getPrefs('token')
+
         const problemIdContainer = document.querySelector("ul.problem-menu li a")
         const problemId = problemIdContainer.innerText.replace(/[^0-9.]/g, "")
         const problemInfo = document.querySelector("div.page-header")
@@ -209,7 +211,7 @@ async function addLevelIndicators() {
                 problemInfo.appendChild(difficultyVotesContainer)
             }
 
-            if (!standard || nick === "solvedac") {
+            if (token && (!standard || nick === "solvedac")) {
                 var defaultLevel = 1
                 if (levelData.level) defaultLevel = levelData.level
                 if (votedFlag) defaultLevel = myVote.voted_level
