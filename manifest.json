@@ -28,8 +28,6 @@
             ],
             "all_frames": true,
             "js": [
-                "3rdparty/jquery.3.4.1.min.js",
-				"3rdparty/bootstrap.3.2.0.min.js",
                 "src/content/utils.js",
                 "src/content/main.js",
                 "src/content/inject_stylesheet.js"
