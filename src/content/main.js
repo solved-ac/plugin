@@ -165,6 +165,22 @@ async function addLevelIndicators() {
         const showTagsInEnglish = JSON.parse(await getPrefs('show_tags_in_english', 'false'))
 
         if (document.querySelector(".label-success") || nick === "solvedac") {
+            if (levelData.algorithms) {
+                problemInfo.appendChild(document.createElement("br"))
+            }
+            for (var j = 0; j < levelData.algorithms.length; j++) {
+                var algo = levelData.algorithms[j]
+                var algorithmTag = document.createElement("a")
+                algorithmTag.setAttribute("href", "https://solved.ac/problems/algorithms/" + algo.algorithm_id)
+                if (showTagsInEnglish) {
+                    algorithmTag.innerText = algo.full_name_en
+                } else {
+                    algorithmTag.innerText = algo.full_name_ko
+                }
+                algorithmTag.className = "algorithm_tag"
+                problemInfo.appendChild(algorithmTag)
+            }
+
             if (levelData.level != 0 && !standard) {
                 var difficultyVotesContainer = document.createElement("div");
                 difficultyVotesContainer.className = "difficulty_vote_container"
@@ -186,26 +202,30 @@ async function addLevelIndicators() {
                                                 + "</a> ➔ " + levelLabel(vote.voted_level)
                     difficultyVote.appendChild(document.createElement("br"))
                 
-                    var voteComment = document.createElement("div")
+                    var voteCommentContainer = document.createElement("div")
+                    var voteComment = document.createElement("span")
+                    voteComment.className = "comment"
                     voteComment.innerText = vote.comment
                     if (!vote.comment) {
-                        voteComment.classList.add("comment_none")
+                        voteCommentContainer.classList.add("comment_none")
                         voteComment.innerText = "난이도 의견을 입력하지 않았습니다"
                     }
+                    difficultyVote.appendChild(voteCommentContainer)
+                    voteCommentContainer.appendChild(voteComment)
                     if (vote.algorithms) {
                         for (var j = 0; j < vote.algorithms.length; j++) {
                             var algo = vote.algorithms[j]
-                            var algorithmTag = document.createElement("div")
+                            var algorithmTag = document.createElement("a")
+                            algorithmTag.setAttribute("href", "https://solved.ac/problems/algorithms/" + algo.algorithm_id)
                             if (showTagsInEnglish) {
                                 algorithmTag.innerText = algo.full_name_en
                             } else {
                                 algorithmTag.innerText = algo.full_name_ko
                             }
                             algorithmTag.className = "algorithm_tag"
-                            voteComment.appendChild(algorithmTag)
+                            voteCommentContainer.appendChild(algorithmTag)
                         }
                     }
-                    difficultyVote.appendChild(voteComment)
                     difficultyVotesContainer.appendChild(difficultyVote)
                 }
                 problemInfo.appendChild(difficultyVotesContainer)
