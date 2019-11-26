@@ -19,8 +19,8 @@ async function initializeVoting(problemId, defaultLevel, myVote) {
         })
     ).json()
     
-    var user = currentUser
-    if (user.level < 16) return
+    var user = currentUser.user
+    if (user.level < 16 && user.user_id !== "solvedac") return
     if (!document.querySelector(".label-success") && user.user_id !== "solvedac") return
     
     const algorithms = await (await fetch("https://api.solved.ac/algorithms.php")).json()
