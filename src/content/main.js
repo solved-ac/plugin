@@ -242,7 +242,7 @@ async function addLevelIndicators() {
         const isShowUserTempTier = JSON.parse(await getPrefs('show_userpage_temp_tier', 'false'))
         const userData = await (await fetch("https://api.solved.ac/user_information.php?id=" + userId)).json()
 
-        if (!userData &&!isShowUserTempTier) return
+        if (!userData && !isShowUserTempTier) return
         
         var newRow = document.createElement("tr")
         var newRowHeader = document.createElement("th")
@@ -256,21 +256,25 @@ async function addLevelIndicators() {
             var levelData = []
 
             const levelDataResponses = await (await fetch("https://api.solved.ac/exp_table.php")).text()
-            levelDataResponses.split(',').forEach(level=>levelData.push(parseInt(level)));
+            levelDataResponses.split(',').forEach(level => levelData.push(parseInt(level)))
 
-            for(i = 0; i< acceptProblems.length;i++) {
+            for(i = 0; i < acceptProblems.length; i++) {
                 var problemId = acceptProblems[i].textContent;
                 promises[i] = fetch("https://api.solved.ac/problem_level.php?id=" + problemId)
             }
             
-            responses = await Promise.all(promises);
-            for(i = 0;i<responses.length;i++) {
+            responses = await Promise.all(promises)
+            for(i = 0; i < responses.length; i++) {
                 data = await responses[i].json()
                 if(data.level != 0)
-                    totalExpPoint+= levelData[data.level]
+                    totalExpPoint += levelData[data.level]
             }
             
-            var expectLevel = getExpectLevelFromExpPoint(totalExpPoint)
+            var expTable = []
+            const expTableData = await (await fetch("https://api.solved.ac/exp_cap.php")).text()
+            expTableData.split(',').forEach(level => expTable.push(parseInt(level)))
+            var expectLevel = getExpectLevelFromExpPoint(totalExpPoint, expTable)
+            
             newRowHeader.innerText = "solved.ac 임시티어"
             newRowDescription.innerHTML = "<a href=\"https://www.acmicpc.net/user/" + userId + "\">"
             + "<span class=\"text-" + levelCssClass(expectLevel) + "\">"

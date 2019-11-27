@@ -105,15 +105,11 @@ function algorithmToTag(item, showTagsInEnglish) {
     }
 }
 
-function getExpectLevelFromExpPoint(exp) {
-    const expTable = [0, 4800, 15740, 38720, 83400, 163700, 298000, 785400, 1202800, 1795000, 2834700,
-                      4276000, 6261000, 8982000, 12704000, 18796000, 26842000, 37941000, 52792000, 
-                      720000000, 152000000, 213000000, 294000000, 380000000, 639000000, 1000000000, 
-                      1200000000, 1500000000]
-    for(i=0;i<expTable.length-1;i++) {
-        if(expTable[i] < exp && exp < expTable[i+1])
-            return i+1;
+function getExpectLevelFromExpPoint(exp, expTable) {
+    for(i=0; i < expTable.length - 1; i++) {
+        if(expTable[i] < exp && exp < expTable[i + 1])
+            return i + 1;
     }
-    if(exp>expTable[expTable.length-1])
+    if(exp>expTable[expTable.length - 1])
         return expTable.length
 }
