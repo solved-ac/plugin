@@ -104,3 +104,12 @@ function algorithmToTag(item, showTagsInEnglish) {
         }
     }
 }
+
+function getExpectLevelFromExpPoint(exp, expTable) {
+    for(i=0; i < expTable.length - 1; i++) {
+        if(expTable[i] < exp && exp < expTable[i + 1])
+            return i + 1;
+    }
+    if(exp>expTable[expTable.length - 1])
+        return expTable.length
+}
