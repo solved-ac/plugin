@@ -2,6 +2,15 @@
 
 [백준 온라인 저지](https://www.acmicpc.net/) 문제들에 난이도 붙여 주는 서비스 - 브라우저 플러그인
 
+## Deprecated
+
+solved.ac와 BOJ가 [곧 통합](https://www.acmicpc.net/board/view/43752)됩니다. 기존에 확장 프로그램에서 지원하던 기능들은
+가까운 미래에 [BOJ](https://www.acmicpc.net/)에서 자체적으로 지원할 예정입니다.
+
+solved.ac는 계속 커뮤니티 프로젝트로 남을 것입니다. 지금까지의 기여에 감사드리며, 앞으로도 많은 사랑 부탁드리겠습니다. 감사합니다!
+
+## 다운로드
+
 [Chrome 웹 스토어](https://chrome.google.com/webstore/detail/solvedac/anenheoccfogllpbpcmbbpcbjpogeehe)에서 다운로드하기
 
 [Firefox Add-ons](https://addons.mozilla.org/ko/firefox/addon/solved-ac/)에서 다운로드하기
