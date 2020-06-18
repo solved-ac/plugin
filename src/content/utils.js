@@ -43,14 +43,10 @@ function levelCssClass(level) {
     return prefix[Math.floor((level - 1) / 5)]
 }
 
-function levelText(level) {
-    if (level == 0) return "<span>Unranked</span>"
+function levelText(level, level_locked) {
+    if (!level && level_locked) return "<span>Not ratable</span>"
+    if (!level) return "<span>Unrated</span>"
     return "<span class=\"text-" + levelCssClass(level) + "\">" + levelName(level) + "</span>"
-}
-
-function kudekiLevelText(level) {
-    const roman = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII']
-    return "<span class=\"text-kudeki\">Ghudegy " + roman[level - 1] + "</span>"
 }
 
 function levelLabelUnlisted() {
@@ -58,15 +54,12 @@ function levelLabelUnlisted() {
     + "</span><img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/unlisted.svg") + "\">"
 }
 
-function levelLabel(level) {
+function levelLabel(level, level_locked) {
     if (level === null) return levelLabelUnlisted()
     if (level == -1) level = 0
+    if (!level && level_locked) return "<span class=\"level_hidden\">00</span>" + "<img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/nr.svg") + "\">"
     return "<span class=\"level_hidden\">" + ('0' + level).slice(-2)
     + "</span><img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/" + level + ".svg") + "\">"
-}
-
-function kudekiLevelLabel(level) {
-    return "<img class=\"level_badge small\" style=\"width: 1.1em;height: 1.4em;\" src=\"" + chrome.extension.getURL("svg/ka" + level + ".svg") + "\">"
 }
 
 function matchCurrentURL(regex) {
